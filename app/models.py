@@ -3,6 +3,8 @@ from selenium import webdriver
 from flask import url_for
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from nameparser import HumanName
 import re
 import time
@@ -11,16 +13,16 @@ import shutil
 import genderbr
 import pandas as pd
 
-# # Ju
-prefixo_pastas_word = 'C:/Users/Juliana Silva/Documents/NIPs'
-prefixo_pastas_excel = 'C:/Users/Juliana Silva/Documents/fontes'
-prefixo_fonte = 'C:/Users/Juliana Silva/documents/Minhas fontes de dados'
+# Ju
+# prefixo_pastas_word = 'C:/Users/Juliana Silva/Documents/NIPs'
+# prefixo_pastas_excel = 'C:/Users/Juliana Silva/Documents/fontes'
+# prefixo_fonte = 'C:/Users/Juliana Silva/documents/Minhas fontes de dados'
 
 
 # Eu
-# prefixo_pastas_word = 'C:/Users/amantino/Documents/NIPs'
-# prefixo_pastas_excel = 'C:/Users/amantino/Documents/fontes'
-# prefixo_fonte = 'C:/Users/amantino/documents/Minhas fontes de dados'
+prefixo_pastas_word = 'C:/Users/amantino/Documents/NIPs'
+prefixo_pastas_excel = 'C:/Users/amantino/Documents/fontes'
+prefixo_fonte = 'C:/Users/amantino/documents/Minhas fontes de dados'
 
 
 responder = []
@@ -105,7 +107,9 @@ class MalaDireta():
         navegador = webdriver.Chrome(chrome_options=chrome_options)
         navegador.get('https://www2.ans.gov.br/ans-idp/')
 
-        time.sleep(5)
+        # Espera até que o elemento com id 'input-mask' esteja disponível
+        element = WebDriverWait(navegador, 15).until(
+            EC.presence_of_element_located((By.ID, 'input-mask')))
 
         navegador.find_element(
             By.ID, 'input-mask').send_keys('069.836.456-26')  # inserir o cpf
@@ -114,38 +118,30 @@ class MalaDireta():
         # clicar no botão de login
         navegador.find_element(By.ID, 'botao').click()
         navegador.maximize_window()
-        time.sleep(3)
 
         caminho_operadora = "//*[contains(text(),'" + resposta + "' )]"
+        element = WebDriverWait(navegador, 15).until(
+            EC.presence_of_element_located((By.XPATH, caminho_operadora)))
         # Selecione na tabela a operadora escolhida
+
         operadora = navegador.find_element(By.XPATH, caminho_operadora).click()
 
         operadora = resposta
         time.sleep(3)
         # clicar de confirmação
         navegador.find_element(By.ID, 'form:btnContinuar').click()
-        time.sleep(4)
 
         actions = ActionChains(navegador)
 
         # Se o nomo da operadora contém a palavra PREMIUM
-        if 'PREMIUM' in resposta:
-            e1 = navegador.find_element(
-                By.XPATH, '//*[@id="form:formMenu:j_idt39"]/ul/li/a')
-            e2 = e1.find_element(
-                By.XPATH, '//*[@id="form:formMenu:j_idt39"]/ul/li/ul/li/a')
+        element = WebDriverWait(navegador, 15).until(
+            EC.presence_of_element_located((By.XPATH, '//span[text()="Fiscalização"]')))
+        e1 = navegador.find_element(By.XPATH, '//span[text()="Fiscalização"]')
 
-        else:
-
-            e1 = navegador.find_element(
-                By.XPATH, '//*[@id="form:formMenu:j_idt39"]/ul/li[6]/a')
-            e2 = e1.find_element(
-                By.XPATH, '//*[@id="form:formMenu:j_idt39"]/ul/li[6]/ul/li/a')
+        e2 = navegador.find_element(By.XPATH, '//span[text()="Espaço NIP"]')
 
         actions.move_to_element(e1).move_to_element(e2).perform()
         e2.click()
-
-        time.sleep(5)
 
         # go to iframe
         navegador.switch_to.frame('frameConteudoDialog')
@@ -159,12 +155,10 @@ class MalaDireta():
 
         if len(paginas) > 9:
             paginas = paginas[:-2]
-
         else:
             paginas = paginas[:-1]
 
         try:
-
             if int(paginas) >= 1:
 
                 todasDF = df
@@ -173,9 +167,10 @@ class MalaDireta():
                     navegador.find_element(
                         By.XPATH, '//*[@id="formContent:j_idt85:tbDemandaAguardandoResposta_paginator_bottom"]/span[4]/span').click()  # clicar na próxima
 
-                    time.sleep(3)
-                    table1 = navegador(By.id, 'formContent:j_idt22')
-                    time.sleep(3)
+                    time.sleep(5)
+                    table1 = navegador.find_element(
+                        By.ID, 'formContent:j_idt22')
+                    time.sleep(5)
                     df1 = pd.read_html(table1.get_attribute('outerHTML'))[1]
                     todasDF = pd.concat([todasDF, df1], ignore_index=True)
                 df = todasDF  # concatenar as duas tabelas
@@ -267,8 +262,7 @@ class MalaDireta():
                     time.sleep(5)
                     navegador.find_element(By.ID,
                                            'formContent:j_idt191:0:j_idt202').click()  # Clicar no Botão Visualizar
-
-                    time.sleep(3)
+                    time.sleep(5)
 
                     documento = navegador.find_element(
                         By.ID,                        'formContent:dlgDocumento')

@@ -1,16 +1,18 @@
-
 from workadays import workdays as wd
 from apiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
+import smtplib
 from flask import render_template, request
 from app.models import MalaDireta
 import __future__
 import pandas as pd
 import os
 import datetime
+import base64
+from email.mime.text import MIMEText
 
 
 # Página inicial do sistema que solicita ao usuários escolher qual operadora
@@ -55,7 +57,7 @@ def tarefas():
         if qdade == '':
             qdade = 10
     else:
-        argumento = "NIPON"
+        argumento = "NIP"
         qdade = 10
 
     SCOPES = ['https://www.googleapis.com/auth/calendar']
@@ -197,6 +199,13 @@ def agendar():
         beneficiario = todas_demandas['Beneficiário'][i]
         operadora = todas_demandas['Operadora'][i]
         natureza = todas_demandas['Natureza'][i]
+        notificacao = todas_demandas['Data da Notificação'][i]
+        notificacao = notificacao[0:10]
+        dia, mes, ano = notificacao.split('/')
+        # Variável criada para usar no agendamento das tarefas
+        dia1, mes1, ano1 = notificacao.split('/')
+        notificacao = f'{ano}-{mes}-{dia}'
+        notificacao = datetime.datetime.strptime(notificacao, '%Y-%m-%d')
         hoje = todas_demandas['Hoje'][i]
         # Separa dia mês e ano
         dia, mes, ano = hoje.split('-')
@@ -210,13 +219,18 @@ def agendar():
         prazo = int(prazo)
         # somar prazo em uteis a data de hoje
         # d1 = date.today()
-        prazo_final = wd.workdays(hoje, (prazo+1))
+        prazo_final = wd.workdays(notificacao, 10)
+        prazo_subsidio = wd.workdays(notificacao, 8)
         # Converter data em str 'YYYY-mm-dd'
         prazo_final = prazo_final.strftime('%Y-%m-%d')
-
-        summary = f'NIPON - {beneficiario} - {demanda} - {protocolo} - {operadora}'
+        operadora1 = operadora.split(' ')
+        operadora1 = operadora1[2]
+        operadora1 = operadora1.upper()
+        beneficiario1 = beneficiario.upper()
+        summary = f'{natureza} - NIP {operadora1} - {beneficiario1} - DEMANDA Nº {demanda} [{dia1}/{mes1}]'
 
         if todas_demandas["agendada"][i] == "NO":
+
             event = {
                 'summary': summary,
                 'location': 'Gomes e Campello',
@@ -230,18 +244,41 @@ def agendar():
                     'timeZone': 'America/Los_Angeles',
                 },
                 'attendees': [
-                    {'email': 'Juliana.morais@campellogomes.com.br'},
+                    # {'email': 'Juliana.morais@campellogomes.com.br'},
+                    # {'email': 'gabriela.faustino@campellogomes.com.br'},
+                    # {'email': 'felipe.gomes@campellogomes.com.br'},
+                    # {'email': 'marcio.campello@campellogomes.com.br'},
+                    {'email': 'amantino@yahoo.com'},
 
                 ],
-                'reminders': {
-                    'useDefault': False,
-                    'overrides': [
-                        {'method': 'email', 'minutes': 24 * 60},
-                        {'method': 'popup', 'minutes': 10},
-                    ],
-                },
+                'guestsCanSeeOtherGuests': True,
+                'transparency': 'transparent',
+                'colorId': 9,
             }
+
             event = service.events().insert(calendarId='primary', body=event).execute()
             print('Event created: %s' % (event.get('htmlLink')))
+
+            # Enviar e-mail
+            with open("grifos/email-operadora.txt", "rb") as file:
+                body = file.read().decode("utf-8")
+                body = f"Boa tarde. Gabriele.\n\n Segue nova demanda ASSISTENCIAL recepcionada no Espaço NIP da Operadora em [{dia1}/{mes1}] \n\n\n Reclamação: Interlocutora, que se identifica como irmã da beneficiária, questiona a não cobertura para tomografia em caráter de urgência. O procedimento foi solicitado no dia [{dia1}/{mes1}/{ano1}], para realização no município RECIFE, entretanto, a operadora negou com a justificativa de que a beneficiária está em carência para o procedimento [não soube especificar se no contrato há alguma cláusula de redução de carência]. Protocolo: não possui protocolo. (sic). \n\n\n Prazo de resolução e contato para fins de RVE (art. 10, I e II, da RN nº 483/22): {prazo_final} \n\n Prazo para envio dos subsídios: {prazo_subsidio} \n\n\n" + \
+                    body
+            smtp_server = "smtp.gmail.com"
+            port = 587
+            sender_email = "claudio.vieiraamantino@gmail.com"
+            password = "pdrzpituclaxvnag"
+            recipient_emails = [attendee['email']
+                                for attendee in event['attendees']]
+            subject = summary
+            message = f"Subject: {subject}\n\n{body}"
+            message = message.encode('utf-8')
+
+            with smtplib.SMTP(smtp_server, port) as server:
+                server.ehlo()
+                server.starttls()
+                server.login(sender_email, password)
+                server.sendmail(sender_email, recipient_emails,
+                                message)
 
     return render_template('tarefas.html', event=event)
