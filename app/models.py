@@ -129,7 +129,7 @@ class MalaDireta():
         operadora = navegador.find_element(By.XPATH, caminho_operadora).click()
 
         operadora = resposta
-        time.sleep(15)
+        time.sleep(10)
         # clicar de confirmação
         navegador.find_element(By.ID, 'form:btnContinuar').click()
 
@@ -169,10 +169,10 @@ class MalaDireta():
                     navegador.find_element(
                         By.XPATH, '//*[@id="formContent:j_idt85:tbDemandaAguardandoResposta_paginator_bottom"]/span[4]/span').click()  # clicar na próxima
 
-                    time.sleep(15)
+                    time.sleep(10)
                     table1 = navegador.find_element(
                         By.ID, 'formContent:j_idt22')
-                    time.sleep(15)
+                    time.sleep(10)
                     df1 = pd.read_html(table1.get_attribute('outerHTML'))[1]
                     todasDF = pd.concat([todasDF, df1], ignore_index=True)
                 df = todasDF  # concatenar as duas tabelas
@@ -222,16 +222,17 @@ class MalaDireta():
                     # Clicar no Botão Limpar filtro
                     navegador.find_element(By.XPATH,
                                            '//*[@id="formContent:j_idt81"]/span ').click()
-                    time.sleep(15)
+                    time.sleep(10)
                     navegador.find_element(By.ID, 'formContent:idObjeto').send_keys(
                         demanda)  # inserir o Demanda
                     navegador.find_element(By.ID,
                                            'formContent:j_idt82').click()  # Clicar no Botão Buscar
-                    time.sleep(15)
+                    time.sleep(10)
                     navegador.find_element(By.ID,
                                            'formContent:j_idt85:tbDemandaAguardandoResposta:0:j_idt114').click()  # Clicar no Botão Detalhes
 
-                    time.sleep(15)
+
+                    time.sleep(10)
 
                     resumo = navegador.find_element(
                         By.ID, 'conteudo')  # Cliquei na DIV Detalhes
@@ -261,10 +262,10 @@ class MalaDireta():
 
                     # Clicar no botão VISUALIZAÇÃO para visalizar janela modal com mais
                     # informações
-                    time.sleep(15)
+                    time.sleep(10)
                     navegador.find_element(By.ID,
                                            'formContent:j_idt191:0:j_idt202').click()  # Clicar no Botão Visualizar
-                    time.sleep(15)
+                    time.sleep(10)
 
                     documento = navegador.find_element(
                         By.ID,                        'formContent:dlgDocumento')
@@ -364,13 +365,13 @@ class MalaDireta():
                     nip.to_excel(
                         f'{prefixo_pastas_excel}/{hoje }/{operadora}/{first_name}/{demanda}/{first_name}.xlsx')
 
-                    time.sleep(15)
+                    time.sleep(10)
 
                     # Clicar no Botão Fechar visualização
                     navegador.find_element(By.ID,
                                            'formContent:j_idt218').click()
 
-                    time.sleep(15)
+                    time.sleep(10)
 
                     # Rolar tela até o final de
                     navegador.execute_script(
