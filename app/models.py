@@ -34,7 +34,7 @@ prefixo_fonte = 'C:/Users/amantino/documents/Minhas fontes de dados'
 
 
 
-responder = []
+
 
 # Classe para criar o arquivo de resposta baseados no sistema ESPAÇO NIP da ANS
 # O sitema coleta informações das diversas páginas e cria uma fonte de mesclagem
@@ -74,21 +74,21 @@ class MalaDireta():
     # Essa função cria uma planilha Excel com os dados dos Dataframe apenas dos
     # do conjunto de dados que será processado de acordo com as escolhas do usuário
 
-    def carta(responder):
-        try:
-            file_name = "planilha/responder.xlsx"  # File name
-            sheet_name = 0  # 4th sheet
-            header = 0  # The header is the 1nd row
-            respNow = pd.read_excel(file_name, sheet_name, header)
-            # Salvar respNow como um dataframe
-            respNow = pd.DataFrame(respNow)
-            # Transpor o dataframe
-            # respNow = respNow.T
-            respNow = pd.DataFrame(data=respNow)
-        except Exception as e:
-            print(e)
+    # def carta(responder):
+    #     try:
+    #         file_name = "planilha/responder.xlsx"  # File name
+    #         sheet_name = 0  # 4th sheet
+    #         header = 0  # The header is the 1nd row
+    #         respNow = pd.read_excel(file_name, sheet_name, header)
+    #         # Salvar respNow como um dataframe
+    #         respNow = pd.DataFrame(respNow)
+    #         # Transpor o dataframe
+    #         # respNow = respNow.T
+    #         respNow = pd.DataFrame(data=respNow)
+    #     except Exception as e:
+    #         print(e)
 
-        return (respNow)
+    #     return (respNow)
     # O banco de dados da ANS é deficiente e registra todos os beneficiários como
     # sendo do sexo masculino. Essa função retorna o sexo considerando o primeiro
     # nome. O índice de acerto é superior a 99%. O sistema considera como Masculino

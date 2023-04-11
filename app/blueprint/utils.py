@@ -4,6 +4,10 @@ import shutil
 from flask import url_for
 import os
 
+import pandas as pd
+
+responder = []
+
 
 # Ju
 # prefixo_pastas_word = 'C:/Users/Juliana Silva/Documents/NIPs'
@@ -49,3 +53,19 @@ def texto(operadora, hoje, first_name, demanda, situacao):
         print('Erro ao copiar o arquivo')
 
     return (url_for('webui.responder'))
+
+def carta(responder):
+    try:
+        file_name = "planilha/responder.xlsx"  # File name
+        sheet_name = 0  # 4th sheet
+        header = 0  # The header is the 1nd row
+        respNow = pd.read_excel(file_name, sheet_name, header)
+        # Salvar respNow como um dataframe
+        respNow = pd.DataFrame(respNow)
+        # Transpor o dataframe
+        # respNow = respNow.T
+        respNow = pd.DataFrame(data=respNow)
+    except Exception as e:
+        print(e)
+
+    return (respNow)
