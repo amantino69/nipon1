@@ -7,6 +7,11 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import os
 import shutil
+import os
+from dotenv import load_dotenv
+from selenium.common.exceptions import NoSuchElementException
+
+
 
 from app.blueprint.utils import find_gender
 
@@ -24,10 +29,26 @@ import pandas as pd
 # prefixo_fonte = 'C:/Users/Juliana Silva/documents/Minhas fontes de dados'
 
 
-# Eu
-prefixo_pastas_word = 'C:/Users/amantino/Documents/NIPs'
-prefixo_pastas_excel = 'C:/Users/amantino/Documents/fontes'
-prefixo_fonte = 'C:/Users/amantino/documents/Minhas fontes de dados'
+# # Eu
+# prefixo_pastas_word = 'C:/Users/amantino/Documents/NIPs'
+# prefixo_pastas_excel = 'C:/Users/amantino/Documents/fontes'
+# prefixo_fonte = 'C:/Users/amantino/documents/Minhas fontes de dados'
+
+
+
+
+load_dotenv()
+
+prefixo_pastas_word = os.getenv("PREFIXO_PASTAS_WORD")
+prefixo_pastas_excel = os.getenv("PREFIXO_PASTAS_EXCEL")
+prefixo_fonte = os.getenv("PREFIXO_FONTE")
+
+# Ju
+# prefixo_pastas_word = 'C:/Users/Juliana Silva/Documents/NIPs'
+# prefixo_pastas_excel = 'C:/Users/Juliana Silva/Documents/fontes'
+# prefixo_fonte = 'C:/Users/Juliana Silva/documents/Minhas fontes de dados'
+
+
 
 
 
@@ -268,10 +289,27 @@ class MalaDireta():
 
                     # Clicar no botão VISUALIZAÇÃO para visalizar janela modal com mais
                     # informações
-                    time.sleep(10)
-                    navegador.find_element(By.ID,
-                                           'formContent:j_idt191:0:j_idt202').click()  # Clicar no Botão Visualizar
-                    time.sleep(10)
+                    # time.sleep(20)
+                    # navegador.find_element(By.ID,
+                    #                        'formContent:j_idt203:0:j_idt214').click()  # Clicar no Botão Visualizar
+                    # formContent:j_idt191:0:j_idt202
+
+
+
+
+                    try:
+                        time.sleep(20)
+                        navegador.find_element(By.ID, 'formContent:j_idt203:0:j_idt214').click()  # Tentar clicar no primeiro ID
+                    except NoSuchElementException:
+                        navegador.find_element(By.ID, 'formContent:j_idt191:0:j_idt202').click()  # Caso não encontre, clicar no segundo ID
+
+
+
+
+
+
+
+                    time.sleep(15)
 
                     documento = navegador.find_element(
                         By.ID,                        'formContent:dlgDocumento')
@@ -374,8 +412,10 @@ class MalaDireta():
                     time.sleep(10)
 
                     # Clicar no Botão Fechar visualização
-                    navegador.find_element(By.ID,
-                                           'formContent:j_idt218').click()
+                    try:
+                        navegador.find_element(By.ID, 'formContent:j_idt230').click()
+                    except NoSuchElementException:
+                        navegador.find_element(By.ID, 'formContent:j_idt218').click()
 
                     time.sleep(10)
 
