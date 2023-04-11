@@ -10,6 +10,7 @@ import shutil
 import os
 from dotenv import load_dotenv
 from selenium.common.exceptions import NoSuchElementException
+from getpass import getpass
 
 
 
@@ -62,6 +63,13 @@ prefixo_fonte = os.getenv("PREFIXO_FONTE")
 # para a criação do documento de resposta criado atraves de um modelo predefinido para
 # no Word recurso do Office denaminado Mala MalaDireta
 
+
+def get_credentials():
+    user_cpf = os.environ.get('USER_CPF') or getpass('Digite o CPF: ')
+    user_password = os.environ.get('USER_PASSWORD') or getpass('Digite a senha: ')
+    return user_cpf, user_password
+
+cpf, senha = get_credentials()
 
 class MalaDireta():
 
@@ -140,11 +148,8 @@ class MalaDireta():
         element = WebDriverWait(navegador, 15).until(
             EC.presence_of_element_located((By.ID, 'input-mask')))
 
-        navegador.find_element(
-            By.ID, 'input-mask').send_keys('069.836.456-26')  # inserir o cpf
-        navegador.find_element(
-            By.ID, 'mod-login-password').send_keys('Ans@2022')  # inserir a senha
-        # clicar no botão de login
+        navegador.find_element(By.ID, 'input-mask').send_keys(cpf)
+        navegador.find_element(By.ID, 'mod-login-password').send_keys(senha)
         navegador.find_element(By.ID, 'botao').click()
         navegador.maximize_window()
 
