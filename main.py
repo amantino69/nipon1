@@ -4,6 +4,14 @@ from itertools import count
 from apiclient.discovery import build
 from httplib2 import Http
 from oauth2client import file, client, tools
+import sys
+from pathlib import Path
+
+# Adicionar a pasta principal do projeto ao sys.path
+folder = Path(__file__).resolve().parent.parent
+sys.path.append(str(folder))
+
+
 
 app = Flask(__name__) # Inicializa a aplicação
 try:

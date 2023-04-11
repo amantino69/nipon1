@@ -1,16 +1,19 @@
 from __future__ import print_function
 from selenium import webdriver
 from flask import url_for
-from selenium.webdriver import ActionChains
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from nameparser import HumanName
+from app.blueprint.utils import find_gender
+
 import re
 import time
 import os
 import shutil
-import genderbr
+
+
 import pandas as pd
 
 # Ju
@@ -66,27 +69,26 @@ class MalaDireta():
     # do conjunto de dados que será processado de acordo com as escolhas do usuário
 
     def carta(responder):
-        file_name = "planilha/responder.xlsx"  # File name
-        sheet_name = 0  # 4th sheet
-        header = 0  # The header is the 1nd row
-        respNow = pd.read_excel(file_name, sheet_name, header)
-        # Salvar respNow como um dataframe
-        respNow = pd.DataFrame(respNow)
-        # Transpor o dataframe
-        # respNow = respNow.T
-        respNow = pd.DataFrame(data=respNow)
+        try:
+            file_name = "planilha/responder.xlsx"  # File name
+            sheet_name = 0  # 4th sheet
+            header = 0  # The header is the 1nd row
+            respNow = pd.read_excel(file_name, sheet_name, header)
+            # Salvar respNow como um dataframe
+            respNow = pd.DataFrame(respNow)
+            # Transpor o dataframe
+            # respNow = respNow.T
+            respNow = pd.DataFrame(data=respNow)
+        except Exception as e:
+            print(e)
 
         return (respNow)
-
     # O banco de dados da ANS é deficiente e registra todos os beneficiários como
     # sendo do sexo masculino. Essa função retorna o sexo considerando o primeiro
     # nome. O índice de acerto é superior a 99%. O sistema considera como Masculino
     # os nomes não identificados
 
-    def find_gender(nome):
-        first_name = nome.split(' ')[0]
-        genero = genderbr.get_gender(first_name)
-        return(genero)
+
 
     # Essa função faz um scraper no site Espaço NIP da ANS passando operadora por
     # operadora, página por página e coleta as informações. Informa os usuários e
@@ -127,13 +129,13 @@ class MalaDireta():
         operadora = navegador.find_element(By.XPATH, caminho_operadora).click()
 
         operadora = resposta
-        time.sleep(6)
+        time.sleep(15)
         # clicar de confirmação
         navegador.find_element(By.ID, 'form:btnContinuar').click()
 
         actions = ActionChains(navegador)
 
-     
+        # Se o nomo da operadora contém a palavra PREMIUM
         element = WebDriverWait(navegador, 15).until(
             EC.presence_of_element_located((By.XPATH, '//span[text()="Fiscalização"]')))
         e1 = navegador.find_element(By.XPATH, '//span[text()="Fiscalização"]')
@@ -142,8 +144,6 @@ class MalaDireta():
 
         actions.move_to_element(e1).move_to_element(e2).perform()
         e2.click()
-
-        time.sleep(6)
 
         # go to iframe
         navegador.switch_to.frame('frameConteudoDialog')
@@ -159,7 +159,7 @@ class MalaDireta():
             paginas = paginas[:-2]
         else:
             paginas = paginas[:-1]
-        time.sleep(6)
+
         try:
             if int(paginas) >= 1:
 
@@ -169,10 +169,10 @@ class MalaDireta():
                     navegador.find_element(
                         By.XPATH, '//*[@id="formContent:j_idt85:tbDemandaAguardandoResposta_paginator_bottom"]/span[4]/span').click()  # clicar na próxima
 
-                    time.sleep(6)
+                    time.sleep(15)
                     table1 = navegador.find_element(
                         By.ID, 'formContent:j_idt22')
-                    time.sleep(6)
+                    time.sleep(15)
                     df1 = pd.read_html(table1.get_attribute('outerHTML'))[1]
                     todasDF = pd.concat([todasDF, df1], ignore_index=True)
                 df = todasDF  # concatenar as duas tabelas
@@ -222,16 +222,16 @@ class MalaDireta():
                     # Clicar no Botão Limpar filtro
                     navegador.find_element(By.XPATH,
                                            '//*[@id="formContent:j_idt81"]/span ').click()
-                    time.sleep(6)
+                    time.sleep(15)
                     navegador.find_element(By.ID, 'formContent:idObjeto').send_keys(
                         demanda)  # inserir o Demanda
                     navegador.find_element(By.ID,
                                            'formContent:j_idt82').click()  # Clicar no Botão Buscar
-                    time.sleep(6)
+                    time.sleep(15)
                     navegador.find_element(By.ID,
                                            'formContent:j_idt85:tbDemandaAguardandoResposta:0:j_idt114').click()  # Clicar no Botão Detalhes
 
-                    time.sleep(6)
+                    time.sleep(15)
 
                     resumo = navegador.find_element(
                         By.ID, 'conteudo')  # Cliquei na DIV Detalhes
@@ -261,11 +261,10 @@ class MalaDireta():
 
                     # Clicar no botão VISUALIZAÇÃO para visalizar janela modal com mais
                     # informações
-                    time.sleep(5)
+                    time.sleep(15)
                     navegador.find_element(By.ID,
-                                           'formContent:j_idt203:0:j_idt214').click()  # Clicar no Botão Visualizar
-                    
-                    time.sleep(5)
+                                           'formContent:j_idt191:0:j_idt202').click()  # Clicar no Botão Visualizar
+                    time.sleep(15)
 
                     documento = navegador.find_element(
                         By.ID,                        'formContent:dlgDocumento')
@@ -337,7 +336,7 @@ class MalaDireta():
                     # Chamar a função Genero e criar campos que serão utilizados na mesclagem
                     # e personalizar o documento evitando textos comoSr(a). beneficiário(a)
 
-                    genero = MalaDireta.find_gender(first_name)
+                    genero = find_gender(first_name)
 
                     if genero == 'F':
                         nip = nip.append(pd.DataFrame([['SEXO1', 'a']]))
@@ -365,13 +364,13 @@ class MalaDireta():
                     nip.to_excel(
                         f'{prefixo_pastas_excel}/{hoje }/{operadora}/{first_name}/{demanda}/{first_name}.xlsx')
 
-                    time.sleep(6)
+                    time.sleep(15)
 
                     # Clicar no Botão Fechar visualização
                     navegador.find_element(By.ID,
-                                           'formContent:j_idt230').click()
+                                           'formContent:j_idt218').click()
 
-                    time.sleep(6)
+                    time.sleep(15)
 
                     # Rolar tela até o final de
                     navegador.execute_script(
@@ -381,7 +380,7 @@ class MalaDireta():
                                            'formContent:pgDetalhes')  # Cliquei na DIV Detalhes
 
                     navegador.find_element(By.ID,
-                                           'formContent:j_idt220').click()  # Clicar no Botão Voltar
+                                           'formContent:j_idt208').click()  # Clicar no Botão Voltar
 
                     #    Copia o arquivo GRIFOS.doc para a pasta Beneficiarios/first_name
                     name = HumanName(first_name)

@@ -11,7 +11,7 @@ PASSWORD_DB ='123456'
 EXTENSIONS = [    
     "app.ext.admin:init_app",
     "app.ext.database:init_app",
-    "app.blueprints.webui:init_app"    
+    "app.blueprint.webui:init_app"    
 ]
 
 
