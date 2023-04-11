@@ -13,6 +13,7 @@ import os
 import datetime
 import base64
 from email.mime.text import MIMEText
+from app.blueprint.utils import texto
 
 # Página inicial do sistema que solicita ao usuários escolher qual operadora
 # e qual para quantidades de dias quer tratar as NIPs
@@ -120,7 +121,7 @@ def responder():
         first_name = request.form.get('beneficiario')
         demanda = request.form.get('demanda')
         situacao = request.form.get('situacao')
-        opcao = MalaDireta.texto(
+        opcao = texto(
             operadora, hoje, first_name, demanda, situacao)
 
     resposta = MalaDireta.carta(responder)

@@ -1,20 +1,22 @@
 from __future__ import print_function
 from selenium import webdriver
-from flask import url_for
+from nameparser import HumanName
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from nameparser import HumanName
+import os
+import shutil
+
 from app.blueprint.utils import find_gender
 
 import re
 import time
-import os
-import shutil
+
 
 
 import pandas as pd
+
 
 # Ju
 # prefixo_pastas_word = 'C:/Users/Juliana Silva/Documents/NIPs'
@@ -28,6 +30,10 @@ prefixo_pastas_excel = 'C:/Users/amantino/Documents/fontes'
 prefixo_fonte = 'C:/Users/amantino/documents/Minhas fontes de dados'
 
 
+
+
+
+
 responder = []
 
 # Classe para criar o arquivo de resposta baseados no sistema ESPAÇO NIP da ANS
@@ -38,32 +44,32 @@ responder = []
 
 class MalaDireta():
 
-    # O recurso Mala Direta do Office espera que a fonte de dados esteja sempre
-    # na pasta \Documents\Minhas fontes de dados.
-    # Esse módulo copia a fonte de dados específica de um determinado beneficiário
-    # para a pasta \Documents\Minhas fontes de dados antes de realizar a mesclagem
+    # # O recurso Mala Direta do Office espera que a fonte de dados esteja sempre
+    # # na pasta \Documents\Minhas fontes de dados.
+    # # Esse módulo copia a fonte de dados específica de um determinado beneficiário
+    # # para a pasta \Documents\Minhas fontes de dados antes de realizar a mesclagem
 
-    def texto(operadora, hoje, first_name, demanda, situacao):
+    # def texto(operadora, hoje, first_name, demanda, situacao):
 
-        # Chama a funcão para capitular os nomes de pessoas de forma correta.
-        # Esse nome será utilizado para criar a beneficiário mantendo o padrão de
-        # da empresa que não utiliza caixa alta nos nomes das pastas
+    #     # Chama a funcão para capitular os nomes de pessoas de forma correta.
+    #     # Esse nome será utilizado para criar a beneficiário mantendo o padrão de
+    #     # da empresa que não utiliza caixa alta nos nomes das pastas
 
-        name = HumanName(first_name)
-        name.capitalize(force=True)
+    #     name = HumanName(first_name)
+    #     name.capitalize(force=True)
 
-        origem_excel = (
-            f'{prefixo_pastas_excel}/{hoje}/{operadora}/{name}/{demanda}/{name}.xlsx')
-        destino_excel = (f'{prefixo_fonte}/fonte.xlsx')
+    #     origem_excel = (
+    #         f'{prefixo_pastas_excel}/{hoje}/{operadora}/{name}/{demanda}/{name}.xlsx')
+    #     destino_excel = (f'{prefixo_fonte}/fonte.xlsx')
 
-        try:
-            shutil.copyfile(origem_excel, destino_excel)
-            os.startfile(
-                f"{prefixo_pastas_word}/{hoje}/{operadora}/{name}/{demanda}/{name}.docx")
-        except:
-            print('Erro ao copiar o arquivo')
+    #     try:
+    #         shutil.copyfile(origem_excel, destino_excel)
+    #         os.startfile(
+    #             f"{prefixo_pastas_word}/{hoje}/{operadora}/{name}/{demanda}/{name}.docx")
+    #     except:
+    #         print('Erro ao copiar o arquivo')
 
-        return (url_for('webui.responder'))
+    #     return (url_for('webui.responder'))
 
     # Essa função cria uma planilha Excel com os dados dos Dataframe apenas dos
     # do conjunto de dados que será processado de acordo com as escolhas do usuário
