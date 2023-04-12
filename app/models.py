@@ -12,6 +12,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import StaleElementReferenceException
 from app.blueprint.utils import find_gender
 import os
 import shutil
@@ -75,8 +76,14 @@ class MalaDireta():
         operadora = driver.find_element(By.XPATH, caminho_operadora).click()
 
         operadora = resposta
-        time.sleep(10)
-        driver.find_element(By.ID, 'form:btnContinuar').click()
+        
+        continue_button_locator = (By.ID, 'form:btnContinuar')
+        while True:
+            try:
+                wait.until(EC.element_to_be_clickable(continue_button_locator)).click()
+                break
+            except StaleElementReferenceException:
+                pass
 
         actions = ActionChains(driver)
 
@@ -119,6 +126,7 @@ class MalaDireta():
                     df1 = pd.read_html(table1.get_attribute('outerHTML'))[1]
                     todasDF = pd.concat([todasDF, df1], ignore_index=True)
                 df = todasDF  # concatenar as duas tabelas
+                
         except:
             print("Não há mais páginas")
 
@@ -168,17 +176,18 @@ class MalaDireta():
 
                     time.sleep(10)
                     resumo = driver.find_element(By.ID, 'conteudo')
-
+                    
                     nip_tables = [pd.read_html(resumo.get_attribute('outerHTML'))[i] for i in range(6)]
                     nip = pd.concat(nip_tables, ignore_index=True)
                     nip = nip.iloc[:, 0].drop(nip.index[-3:]).str.replace('?', ':').str.split(':', n=1, expand=True)
-
                     try:
-                        time.sleep(20)
-                        driver.find_element(By.ID, 'formContent:j_idt203:0:j_idt214').click()
-                    except NoSuchElementException:
-                        driver.find_element(By.ID, 'formContent:j_idt191:0:j_idt202').click()
-
+                        element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, 'formContent:j_idt203:0:j_idt214')))
+                        element.click()
+                    except TimeoutException:
+                        try:
+                            driver.find_element(By.ID, 'formContent:j_idt191:0:j_idt202').click()
+                        except NoSuchElementException:
+                            pass                  
                     time.sleep(15)
                     documento = driver.find_element(By.ID, 'formContent:dlgDocumento')
                     notifica = pd.read_html(documento.get_attribute('outerHTML'))[0].drop_duplicates()
