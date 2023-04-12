@@ -11,6 +11,7 @@ from getpass import getpass
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import TimeoutException
 from app.blueprint.utils import find_gender
 import os
 import shutil
@@ -66,7 +67,8 @@ class MalaDireta():
             driver.find_element(By.ID, 'botao').click()
             driver.maximize_window()
 
-
+        wait = WebDriverWait(driver, 10)  # 10 segundos de tempo limite
+        
         caminho_operadora = "//*[contains(text(),'" + resposta + "' )]"
         element = WebDriverWait(driver, 15).until(
             EC.presence_of_element_located((By.XPATH, caminho_operadora)))
@@ -220,31 +222,26 @@ class MalaDireta():
 
                     nip.to_excel(
                         f'{prefixo_pastas_excel}/{hoje}/{operadora}/{first_name}/{demanda}/{first_name}.xlsx')
-
-                    time.sleep(10)
-
                     try:
-                        driver.find_element(By.ID, 'formContent:j_idt230').click()
-                    except NoSuchElementException:
+                        wait.until(EC.element_to_be_clickable((By.ID, 'formContent:j_idt230'))).click()
+                    except TimeoutException:
                         driver.find_element(By.ID, 'formContent:j_idt218').click()
 
-                    time.sleep(10)
-                    # formContent:j_idt230
-                    # formContent:j_idt220
-
-                    driver.execute_script(
-                        "window.scrollTo(0, document.body.scrollHeight);")
-
-                    driver.find_element(By.ID,
-                                        'formContent:pgDetalhes')
-                    time.sleep(10)
+                    try:
+                        wait.until(lambda d: d.execute_script("return document.readyState") == "complete")
+                        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                    except TimeoutException:
+                        pass
 
                     try:
-                        driver.find_element(By.ID,
-                                        'formContent:j_idt208').click()
-                    except:
-                        driver.find_element(By.ID,    
-                                         'formContent:j_idt220').click()
+                        wait.until(EC.presence_of_element_located((By.ID, 'formContent:pgDetalhes')))
+                    except TimeoutException:
+                        pass
+
+                    try:
+                        wait.until(EC.element_to_be_clickable((By.ID, 'formContent:j_idt208'))).click()
+                    except TimeoutException:
+                        driver.find_element(By.ID, 'formContent:j_idt220').click()
 
                     shutil.copy(
                         f'grifos/{operadora}.docx', (f'{prefixo_pastas_word}/{hoje}/{operadora}/{name}/{demanda}/{name}.docx'))
