@@ -55,11 +55,12 @@ class MalaDireta():
         chrome_options.add_argument('ignore-certificate-errors')
 
         with webdriver.Chrome(chrome_options=chrome_options) as driver:
-            chrome_driver_path = 'chromedriver.exe'  # Replace this with the path to your ChromeDriver executable
+            chrome_driver_path = 'chromedriver.exe'  
             s = ChromeService(executable_path=chrome_driver_path)
             driver = webdriver.Chrome(service=s)
-            driver.get('https://www2.ans.gov.br/ans-idp/')  # Replace this with the URL of your target web page
+            driver.get('https://www2.ans.gov.br/ans-idp/')  
 
+            # Informa o CPF e a senha
 
             WebDriverWait(driver, 15).until(
                 EC.presence_of_element_located((By.ID, 'input-mask')))
@@ -70,17 +71,17 @@ class MalaDireta():
 
         wait = WebDriverWait(driver, 10)  # 10 segundos de tempo limite
         
-        caminho_operadora = "//*[contains(text(),'" + resposta + "' )]"
+        caminho_operadora = "//*[contains(text(),'" + resposta + "' )]" # Recebe o nome da operadora
         element = WebDriverWait(driver, 15).until(
             EC.presence_of_element_located((By.XPATH, caminho_operadora)))
-        operadora = driver.find_element(By.XPATH, caminho_operadora).click()
+        operadora = driver.find_element(By.XPATH, caminho_operadora).click() # clicar na linha da operadora escolhida
 
         operadora = resposta
         
-        continue_button_locator = (By.ID, 'form:btnContinuar')
+        continue_button_locator = (By.ID, 'form:btnContinuar') 
         while True:
             try:
-                wait.until(EC.element_to_be_clickable(continue_button_locator)).click()
+                wait.until(EC.element_to_be_clickable(continue_button_locator)).click() # clicar no botão CONFIRMAR
                 break
             except StaleElementReferenceException:
                 pass
@@ -93,36 +94,35 @@ class MalaDireta():
 
         e2 = driver.find_element(By.XPATH, '//span[text()="Espaço NIP"]')
 
-        actions.move_to_element(e1).move_to_element(e2).perform()
-        e2.click()
+        actions.move_to_element(e1).move_to_element(e2).perform() # Passar o mouse sobre Fiscalização e Espaço NIP
+        e2.click() # clicar em Espaço NIP
 
-        driver.switch_to.frame('frameConteudoDialog')
+        driver.switch_to.frame('frameConteudoDialog') # mudar para o frame do Espaço NIP Título DEMANDA
 
-        table = driver.find_element(By.ID, 'conteudoPrincipal')
+        table = driver.find_element(By.ID, 'conteudoPrincipal') # selecionar a tabela
 
-        df = pd.read_html(table.get_attribute('outerHTML'))[1]
+        df = pd.read_html(table.get_attribute('outerHTML'))[1] # ler a tabela e carrega df
 
-        elements = driver.find_elements(By.CLASS_NAME, 'ui-paginator-pages')
-        paginas = elements[-1].text
+        elements = driver.find_elements(By.CLASS_NAME, 'ui-paginator-pages') # selecionar a quantidade de páginas
+        paginas = elements[-1].text # pegar o texto da quantidade de páginas
 
         if len(paginas) > 9:
-            paginas = paginas[:-2]
+            paginas = paginas[:-2] # remover 2 caracteres se for maior que 9
         else:
-            paginas = paginas[:-1]
+            paginas = paginas[:-1] # remover 1 caractere se for menor que 9
 
         try:
-            if int(paginas) >= 1:
+            if int(paginas) >= 1: # se tiver mais de uma página
 
                 todasDF = df
                 e = 2
-                for e in paginas:
+                for e in paginas: # Percorre todas as páginas e acumula o conteúdo em uma única tabela (df)
                     driver.find_element(
                         By.XPATH, '//*[@id="formContent:j_idt85:tbDemandaAguardandoResposta_paginator_bottom\"]/span[4]/span').click()  # clicar na próxima
 
                     time.sleep(10)
                     table1 = driver.find_element(
                         By.ID, 'formContent:j_idt22')
-                    time.sleep(10)
                     df1 = pd.read_html(table1.get_attribute('outerHTML'))[1]
                     todasDF = pd.concat([todasDF, df1], ignore_index=True)
                 df = todasDF  # concatenar as duas tabelas
@@ -130,66 +130,66 @@ class MalaDireta():
         except:
             print("Não há mais páginas")
 
-        hoje = time.strftime('%d-%m-%Y')
+        hoje = time.strftime('%d-%m-%Y') # data de hoje no formato dd-mm-aaaa
 
-        df.insert(0, 'Operadora', operadora)
-        df.insert(0, 'Hoje', hoje)
+        df.insert(0, 'Operadora', operadora) # inserir coluna Operadora no dataframe df 
+        df.insert(0, 'Hoje', hoje) # inserir coluna Hoje no dataframe df
 
         if not os.path.exists('planilha'):
-            os.makedirs('planilha')
+            os.makedirs('planilha') # criar pasta planilha se não existir
 
-        responder = df[(df['Prazo'] == dias + " dias úteis")
-                       & (df['Respondido'] == 'NO')]
+        responder = df[(df['Prazo'] == dias + " dias úteis") 
+                       & (df['Respondido'] == 'NO')] # selecionar as linhas que tem o prazo igual ao dia de hoje
 
-        responder.to_excel('planilha/responder.xlsx', index=False)
-        df.to_excel('planilha/tarefas.xlsx', engine='xlsxwriter')
+        responder.to_excel('planilha/responder.xlsx', index=False) # salvar o dataframe responder em um arquivo excel
+        df.to_excel('planilha/tarefas.xlsx', engine='xlsxwriter') # salvar o dataframe df em um arquivo excel
         
         dict_info = []
 
         if len(responder) > 0:
-            for j in range(len(df)):
-                linhas = len(df)
-                first_name = df.loc[j, 'Beneficiário']
-                prazo = df.loc[j, 'Prazo']
-                demanda = int(df.loc[j, 'Demanda'])
-                respondido = df.loc[j, 'Respondido']
-                if prazo == (dias + ' dias úteis') and (respondido == 'NO'):
-                    name = HumanName(first_name)
-                    name.capitalize(force=True)
-                    demanda_path_word = f'{prefixo_pastas_word}/{hoje}/{operadora}/{name}/{demanda}/'
-                    demanda_path_excel = f'{prefixo_pastas_excel}/{hoje}/{operadora}/{name}/{demanda}/'
+            for j in range(len(df)): # Percorre todas as linhas do dataframe df
+                linhas = len(df) # quantidade de linhas do dataframe df
+                first_name = df.loc[j, 'Beneficiário'] # seleciona o nome do beneficiário
+                prazo = df.loc[j, 'Prazo'] # seleciona o prazo
+                demanda = int(df.loc[j, 'Demanda']) # seleciona a demanda
+                respondido = df.loc[j, 'Respondido'] # seleciona se a demanda foi respondida ou não
+                if prazo == (dias + ' dias úteis') and (respondido == 'NO'): # se o prazo for igual ao dia de hoje e a demanda não foi respondida
+                    name = HumanName(first_name) # separa o nome do beneficiário em primeiro nome e sobrenome
+                    name.capitalize(force=True) # capitaliza o primeiro nome e o sobrenome
+                    demanda_path_word = f'{prefixo_pastas_word}/{hoje}/{operadora}/{name}/{demanda}/' # cria o caminho da pasta para salvar o arquivo word
+                    demanda_path_excel = f'{prefixo_pastas_excel}/{hoje}/{operadora}/{name}/{demanda}/' # cria o caminho da pasta para salvar o arquivo excel
 
-                    os.makedirs(demanda_path_word, exist_ok=True)
-                    os.makedirs(demanda_path_excel, exist_ok=True)
+                    os.makedirs(demanda_path_word, exist_ok=True) # cria a pasta para salvar o arquivo word
+                    os.makedirs(demanda_path_excel, exist_ok=True) # cria a pasta para salvar o arquivo excel
 
                     try:
-                        driver.find_element(By.XPATH, '//*[@id="formContent:j_idt81"]/span ').click()
+                        driver.find_element(By.XPATH, '//*[@id="formContent:j_idt81"]/span ').click() # clicar no botão de pesquisar DEMANDA
                         time.sleep(10)
-                        driver.find_element(By.ID, 'formContent:idObjeto').send_keys(demanda)  
-                        driver.find_element(By.ID, 'formContent:j_idt82').click()
+                        driver.find_element(By.ID, 'formContent:idObjeto').send_keys(demanda)  # digitar o número da demanda
+                        driver.find_element(By.ID, 'formContent:j_idt82').click() # clicar no botão de BUSCAR
                         time.sleep(10)
-                        driver.find_element(By.ID, 'formContent:j_idt85:tbDemandaAguardandoResposta:0:j_idt114').click()
+                        driver.find_element(By.ID, 'formContent:j_idt85:tbDemandaAguardandoResposta:0:j_idt114').click() # clicar no botão de DETALHE
 
                     except NoSuchElementException:
                         # Handle the exception here, e.g., logging the error, skipping the iteration, or trying another approach
                         pass
 
-                    time.sleep(10)
-                    resumo = driver.find_element(By.ID, 'conteudo')
+                    time.sleep(15)
+                    resumo = driver.find_element(By.ID, 'conteudo') # seleciona toda a tabela DEMANDA
                     
-                    nip_tables = [pd.read_html(resumo.get_attribute('outerHTML'))[i] for i in range(6)]
+                    nip_tables = [pd.read_html(resumo.get_attribute('outerHTML'))[i] for i in range(6)] # ler a tabela e carrega df
                     nip = pd.concat(nip_tables, ignore_index=True)
-                    nip = nip.iloc[:, 0].drop(nip.index[-3:]).str.replace('?', ':').str.split(':', n=1, expand=True)
+                    nip = nip.iloc[:, 0].drop(nip.index[-3:]).str.replace('?', ':').str.split(':', n=1, expand=True) # separa a coluna 0 em duas colunas
                     try:
-                        element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, 'formContent:j_idt203:0:j_idt214')))
+                        element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, 'formContent:j_idt203:0:j_idt214'))) # Clicar no botão de VISUALIZAR
                         element.click()
                     except TimeoutException:
                         try:
-                            driver.find_element(By.ID, 'formContent:j_idt191:0:j_idt202').click()
+                            driver.find_element(By.ID, 'formContent:j_idt191:0:j_idt202').click() #
                         except NoSuchElementException:
                             pass                  
-                    time.sleep(15)
-                    documento = driver.find_element(By.ID, 'formContent:dlgDocumento')
+                    # time.sleep(15)
+                    documento = driver.find_element(By.ID, 'formContent:dlgDocumento') # seleciona a tabela DOCUMENTO
                     notifica = pd.read_html(documento.get_attribute('outerHTML'))[0].drop_duplicates()
                     protocolo = driver.find_element(By.XPATH, '//*[@id="formContent:obDocumento"]/table[2]/tbody/tr[1]/td').text
                     numeroProtocolo = re.findall(r'\d+', protocolo)
@@ -250,9 +250,9 @@ class MalaDireta():
                     try:
                         wait.until(EC.element_to_be_clickable((By.ID, 'formContent:j_idt208'))).click()
                     except TimeoutException:
-                        driver.find_element(By.ID, 'formContent:j_idt220').click()
+                        driver.find_element(By.ID, 'formContent:j_idt220').click() # clicar no botão de VOLTAR
 
                     shutil.copy(
-                        f'grifos/{operadora}.docx', (f'{prefixo_pastas_word}/{hoje}/{operadora}/{name}/{demanda}/{name}.docx'))
+                        f'grifos/{operadora}.docx', (f'{prefixo_pastas_word}/{hoje}/{operadora}/{name}/{demanda}/{name}.docx')) # copia o arquivo word para a pasta
 
                     return dict_info
