@@ -1,5 +1,5 @@
 [default]
-DEBUG = false
+DEBUG = true
 FLASK_ADMIN_NAME = "FAST NIP"
 FLASK_ADMIN_TEMPLATE_MODE = "bootstrap3"
 FLASK_ADMIN_SWATCH = 'cerulean'

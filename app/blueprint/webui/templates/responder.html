@@ -1,118 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
+
+{% block titulo %}
+  Responder
+{% endblock %}
+
+{% block menu %}
+
+<div">
+  <li>
+    <a  href="{{ url_for('webui.index') }}">
+      <i class="fa fa-dashboard"></i>
+      <span class="span nav-link">Processar</span>
+    </a>
+  </li>
+  <li>
+    <a class="active" href="{{url_for('webui.responder') }}">
+      <i class="fa fa-envelope"></i>
+      <span class="nav-link">Responder </span>
+    </a>
+  </li>
+
+  <li>
+    <a href="{{url_for('webui.saida') }}">
+      <i class="fa fa-envelope"></i>
+      <span class="nav-link">Resumo </span>
+    </a>
+  </li>
+
+  <li>
+    <a href="{{url_for('webui.tarefas') }}">
+      <i class="fa fa-envelope"></i>
+      <span class="span nav-link">Tarefas </span>
+    </a>
+  </li>
+</div>
+
+{% endblock %}
+
+{% block content %}
 
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="">
-  <meta name="author" content="Dashboard">
-  <meta name="keyword" content="Dashboard, Bootstrap, Admin, Template, Theme, Responsive, Fluid, Retina">
-  <title>
-    {% block titulo %}
-
-    {% endblock %}
-  </title>
-
-  <!-- Favicons -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
-    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-  <link href="{{ url_for('static', filename='img/favicon.png') }}" rel="icon">
-  <link href="{{ url_for('static', filename='img/apple-touch-icon.png') }}" rel="apple-touch-icon">
-
-  <!-- Bootstrap core CSS -->
-  <link href="{{ url_for('static', filename='lib/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-  <!--external css-->
-  <link href="{{ url_for('static', filename='lib/font-awesome/css/font-awesome.css') }}" rel="stylesheet" />
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/zabuto_calendar.css') }}">
-  <link rel="stylesheet" type="text/css"
-    href="{{ url_for('static', filename='lib/gritter/css/jquery.gritter.css') }}" />
-  <!-- Custom styles for this template -->
-  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
-  <link href="{{ url_for('static', filename='css/style-responsive.css') }}" rel="stylesheet">
-  <script src="{{ url_for('static', filename='lib/chart-master/Chart.js') }}"></script>
-
-  <!-- =======================================================
-    Template Name: Dashio
-    Template URL: https://templatemag.com/dashio-bootstrap-admin-template/
-    Author: TemplateMag.com
-    License: https://templatemag.com/license/
-  ======================================================= -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/montar_agenda.css') }}">
 </head>
-
-<body>
-  <section id="container">
-    <!-- **********************************************************************************************************************************************************
-       TOP BAR CONTENT & NOTIFICATIONS
-        *********************************************************************************************************************************************************** -->
-    <!--header start-->
-    <header class="header black-bg">
-      <div class="sidebar-toggle-box">
-        <div class="fa fa-bars tooltips" data-placement="right" data-original-title="Toggle Navigation"></div>
-      </div>
-      <!--logo start-->
-      <a href="index.html" class="logo"><b>NIP<span>ON</span></b></a>
-      <!--logo end-->
- 
-      <div class="top-menu">
-        <ul class="nav pull-right top-menu">
-          <li><a class="logout" href="login.html">Logout</a></li>
-        </ul>
-      </div>
-    </header>
-    <!--header end-->
-    <!-- **********************************************************************************************************************************************************
-        MAIN SIDEBAR MENU
-        *********************************************************************************************************************************************************** -->
-    <!--sidebar start-->
-    <aside>
-      <div id="sidebar" class="nav-collapse ">
-        <!-- sidebar menu start-->
-        <ul class="sidebar-menu" id="nav-accordion">
-
-          <li class="mt">
-            <a href="{{ url_for('webui.index') }}">
-              <i class="fa fa-dashboard"></i>
-              <span class="span">Processar</span>
-            </a>
-          </li>
-          <li>
-            <a class="active" href="{{url_for('webui.responder') }}">
-              <i class="fa fa-envelope"></i>
-              <span>Responder </span>
-            </a>
-          </li>
-
-          <li>
-            <a href="{{url_for('webui.saida') }}">
-              <i class="fa fa-envelope"></i>
-              <span>Resumo </span>
-            </a>
-          </li>
-
-          <li>
-            <a href="{{url_for('webui.tarefas') }}">
-              <i class="fa fa-envelope"></i>
-              <span class="span">Tarefas </span>
-            </a>
-          </li>
-
-
-        </ul>
-        <!-- sidebar menu end-->
-      </div>
-    </aside>
-    <!--sidebar end-->
-    <!-- ****************************************************
-      MAIN CONTENT
-      ***************************************************** -->
-    <!--main content start-->
-    <section id="main-content">
-      <section class="wrapper">
-        <div class="row"></div>
-
-      </section>
-</body>
-
 
 <!-- Colocar tabela em um formulário para submit -->
 <form action="{{ url_for('webui.responder') }}" method="post">
@@ -164,7 +93,7 @@
   <div class="atenção">
     <h6> Atenção!! Feche todos documento do word dessa lista antes de abrir o próximo</h6>
   </div>
-  </body>
+ 
 
 
   <script>
@@ -230,16 +159,10 @@
 
     });
 
-
-
-
-
   </script>
 
-      <!-- Favicons -->
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
-      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
+
 
   <style>
     body {
@@ -247,16 +170,21 @@
     }
 
     #minhaTabela thead th {
-      font-weight: bold;
-      background-color: black;
-      color: white;
+    font-weight: bold;
+    background-color: #337ab7; /* Atualizar cor de fundo aqui */
+    color: white;
+    font-size: 14px;
+    padding: 10px 10px; /* Aumentar o padding (vertical) aqui */
+  }
 
-      padding: 5px 10px;
-    }
 
     #minhaTabela tr td {
       padding: 5px 10px;
       text-align: left;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
 
       cursor: pointer;
       /*importante para não mostrar cursor de texto*/
@@ -325,6 +253,33 @@
       font-size: 16px;
       border-radius: 4px
     }
+
+  .nav-link {
+  font-size: 18px;
+}
+
+div.atenção {
+      font-size: 30px;
+      color: #8d0d38;
+      background-color: #fff;
+      padding: 5px;
+      text-align: center;
+      font-weight: bold;
+      position: fixed;
+      width: 100%;
+      bottom: 15px;
+      z-index: 1;
+      animation: piscar 2s infinite;
+    }
+
+    @keyframes piscar {
+      0% { opacity: 1; }
+      50% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+
   </style>
 
-</html>
+
+  {% endblock %}

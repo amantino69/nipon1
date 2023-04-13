@@ -1,34 +1,34 @@
 {% extends "base.html" %}
 
 {% block titulo %}
-Resumo
+  Resumo
 {% endblock %}
 
 {% block menu %}
 <li class="mt">
   <a href="{{ url_for('webui.index') }}">
     <i class="fa fa-dashboard"></i>
-    <span class="span">Processar NIP</span>
+    <span class="nav-link">Processar</span>
   </a>
 </li>
 <li>
   <a href="{{url_for('webui.responder') }}">
     <i class="fa fa-envelope"></i>
-    <span>Responder </span>
+    <span class="nav-link">Responder </span>
   </a>
 </li>
 
 <li>
   <a class="active" href="{{url_for('webui.saida') }}">
     <i class="fa fa-envelope"></i>
-    <span class="span">Resumo </span>
+    <span class="nav-link">Resumo </span>
   </a>
 </li>
 
 <li>
   <a href="{{url_for('webui.tarefas') }}">
     <i class="fa fa-envelope"></i>
-    <span class="span">Tarefas </span>
+    <span class="nav-link">Tarefas </span>
   </a>
 </li>
 
@@ -37,13 +37,12 @@ Resumo
 
 {% block content %}
 
+<head>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/montar_agenda.css') }}">
+</head>
 
-<div class="row mt">
-  <div class="col-lg-6 col-md-6 col-sm-6">
-    <h1 class="title">Resumo</h1>   
-    <div class="container"></div>
     
-  <h3>{{mensagem}}</h1>
+  <h3>{{mensagem}}</h3>
   {% if saida != [] %}  
   <h3> Processo finalizado, confira a saida</h3>
         <table width=900  text-align: center class="table table-striped table-bordered table-hover">
@@ -81,49 +80,98 @@ Resumo
     <h3> Não há NIPs para serem processadas para o período selecionado</h3>
   {% endif %}
 
-  
-
-{% endblock %}
+ 
 
 <style>
-  .span,
-  p {
-    font-size: "Open Sans Condensed", "Arial", sans-serif;
-    text-align: center;
-    margin: 0 auto;
-    max-width: 50%; font: rgb(13, 14, 12);
-    color: rgb(12, 1, 1);
-    padding: 2px;
+  body {
+    font-family: sans-serif;
   }
 
-  html, body {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  font-size: 20px;
+  #minhaTabela thead th {
+    font-weight: bold;
+    background-color: black;
+    color: white;
+
+    padding: 5px 10px;
+  }
+
+  #minhaTabela tr td {
+    padding: 5px 10px;
+    text-align: left;
+
+    cursor: pointer;
+    /*importante para não mostrar cursor de texto*/
+  }
+
+  #minhaTabela tr td:last-child {
+    text-align: right;
+  }
+
+  /*Cores*/
+  #minhaTabela tr:nth-child(odd) {
+    background-color: #eee;
+  }
+
+  /*Cor quando passar por cima*/
+  #minhaTabela tr:hover td {
+    background-color: #b8b7db;
+  }
+
+  /*Cor quando selecionado*/
+  #minhaTabela tr.selecionado td {
+    background-color: #1fc71f;
+  }
+
+
+
+
+  footer.fixar-rodape {
+    border-top: 1px solid #333;
+    bottom: 0;
+    left: 20%;
+    height: 40px;
+    position: fixed;
+    width: 100%;
+  }
+
+
+  div.body-content {
+    /** Essa margem vai evitar que o conteudo fique por baixo do rodapé **/
+    margin-bottom: 40px;
+  }
+
+  div.atenção {
+    font-size: 20px;
+    color: #337ab7;
+    background-color: #fff;
+
+
+    padding: 5px;
+    text-align: center;
+    font-weight: bold;
+    position: fixed;
+    width: 100%;
+    bottom: 15px;
+    z-index: 1;
+  }
+
+  .button {
+    background-color: #337ab7;
+    /* Green */
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 4px
+  }
+
+.nav-link {
+font-size: 18px;
 }
 
-div {
-  border: 1px solid red;
-}
+</style>
 
-table {
-  border-collapse: separate;
-  border-spacing: 0 8px;
-  margin-top: -8px;
-}
 
-td {
-  border: 1px solid green;
-  border-left-width: 0;
-  min-width: 120px;
-  height: 18px;
-}
-
-td:first-child {
-  border-left-width: 1px;
-}
-
-.cabecalho {text-align: center}
-</style> 
+{% endblock %}
