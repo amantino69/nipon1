@@ -48,26 +48,27 @@ class MalaDireta():
             except (NoSuchElementException, TimeoutException):
                 return False
 
+        # webdriver é DRIVER que permite a biblioteca Selenium do Python acessar
+        # e entender a navegação do Google Chrome. Se for outro navegador esse arquivo
+        # preciso ser substituído pelo respectivo driver. O arquivo de ficar na mesma
+        # pasta onde o progra será executado ou estar na path
         chrome_options = webdriver.ChromeOptions()
-        # Inicia o driver sem abrir a tela
-        # chrome_options.add_argument("--headless")
+        # Inicia o navegador sem abrir a tela
+        chrome_options.add_argument("--headless")
         # Ignora erros de certificação digital
         chrome_options.add_argument('ignore-certificate-errors')
 
-        with webdriver.Chrome(chrome_options=chrome_options) as driver:
-            chrome_driver_path = 'chromedriver.exe'  
-            s = ChromeService(executable_path=chrome_driver_path)
-            driver = webdriver.Chrome(service=s)
-            driver.get('https://www2.ans.gov.br/ans-idp/')  
+        driver = webdriver.Chrome(chrome_options=chrome_options)
+        driver.get('https://www2.ans.gov.br/ans-idp/')
 
             # Informa o CPF e a senha
 
-            WebDriverWait(driver, 15).until(
-                EC.presence_of_element_located((By.ID, 'input-mask')))
-            driver.find_element(By.ID, 'input-mask').send_keys(cpf)
-            driver.find_element(By.ID, 'mod-login-password').send_keys(senha)
-            driver.find_element(By.ID, 'botao').click()
-            driver.maximize_window()
+        WebDriverWait(driver, 15).until(
+            EC.presence_of_element_located((By.ID, 'input-mask')))
+        driver.find_element(By.ID, 'input-mask').send_keys(cpf)
+        driver.find_element(By.ID, 'mod-login-password').send_keys(senha)
+        driver.find_element(By.ID, 'botao').click()
+        driver.maximize_window()
 
         wait = WebDriverWait(driver, 10)  # 10 segundos de tempo limite
         
