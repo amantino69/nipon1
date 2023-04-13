@@ -175,8 +175,7 @@ class MalaDireta():
                         # Handle the exception here, e.g., logging the error, skipping the iteration, or trying another approach
                         pass
 
-                    time.sleep(15)
-                    resumo = driver.find_element(By.ID, 'conteudo') # seleciona toda a tabela DEMANDA
+                    resumo = wait.until(EC.presence_of_element_located((By.ID, 'conteudo')))
                     
                     nip_tables = [pd.read_html(resumo.get_attribute('outerHTML'))[i] for i in range(6)] # ler a tabela e carrega df
                     nip = pd.concat(nip_tables, ignore_index=True)
