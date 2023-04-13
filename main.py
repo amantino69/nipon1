@@ -1,9 +1,7 @@
-from flask import Flask, request, render_template
+from flask import Flask, request
 from apiclient.discovery import build
 from httplib2 import Http
 from oauth2client import file, client, tools
-
-
 
 app = Flask(__name__)
 
@@ -38,15 +36,6 @@ def main():
     e = CAL.events().insert(calendarId='primary', sendNotifications=True, body=EVENT1).execute()
 
     return "Hello, World"
-
-@app.route("/recarregar_resumo")
-def recarregar_resumo():
-    df = pd.read_excel('planilha/responder.xlsx')
-    # Carregue a tabela Excel novamente, como fez na função 'webui.saida'
-    saida, html_table = saida() # Substituir pelo código que gera a tabela
-    
-    return render_template("saida.html", saida=saida, html_table=html_table)
-
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -19,16 +19,13 @@ from app.blueprint.utils import carta
 # Página inicial do sistema que solicita ao usuários escolher qual operadora
 # e qual para quantidades de dias quer tratar as NIPs
 def index():
-    df = pd.read_excel('planilha/responder.xlsx')
-    # Convert the Excel data to an HTML table
-    html_table = df.to_html(index=False, classes="table table-bordered")
 
     if request.method == 'POST':
         operadora = request.form.get('operadora')
         dias = request.form.get('dias')
         saida = MalaDireta.job(operadora, dias)
 
-        return render_template('saida.html', saida=saida, html_table=html_table)
+        return render_template('saida.html', saida=saida)
 
     return render_template('index.html')
 
