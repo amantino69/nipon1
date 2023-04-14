@@ -18,6 +18,8 @@ from app.blueprint.utils import carta
 
 # Página inicial do sistema que solicita ao usuários escolher qual operadora
 # e qual para quantidades de dias quer tratar as NIPs
+
+
 def index():
 
     if request.method == 'POST':
@@ -25,10 +27,11 @@ def index():
         dias = request.form.get('dias')
         saida = MalaDireta.job(operadora, dias)
         tabela = pd.read_excel('planilha/responder.xlsx')
-        tabela_html = tabela.to_html(classes=["table", "table-striped", "table-bordered", "table-hover"], index=False)
-           
+        tabela_html = tabela.to_html(
+            classes=["table", "table-striped", "table-bordered", "table-hover"], index=False)
+
         return render_template('saida.html', tabela_html=tabela_html)
-  
+
     return render_template('index.html')
 
 
@@ -36,11 +39,10 @@ def index():
 # que se enquadraram nas opções escolhidas
 def saida():
     tabela = pd.read_excel('planilha/responder.xlsx')
-    tabela_html = tabela.to_html(classes=["table", "table-striped", "table-bordered", "table-hover"], index=False)
+    tabela_html = tabela.to_html(
+        classes=["table", "table-striped", "table-bordered", "table-hover"], index=False)
 
     return render_template('saida.html', tabela_html=tabela_html)
-
-
 
 
 # Essa função permite que o usuário escolha um argumento de pesquisa e uma
