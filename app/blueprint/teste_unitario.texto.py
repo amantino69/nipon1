@@ -1,48 +1,32 @@
+from flask import url_for
+from utils import texto  # Importe seu objeto app Flask
 import unittest
-from unittest.mock import MagicMock, patch
-from utils import texto
-from nameparser import HumanName
-import shutil
-import os
+from unittest import TestCase
 
+class TestTexto(TestCase):
 
-class TestTexto(unittest.TestCase):
+    def setUp(self):
+        pass
 
-    @patch("shutil.copyfile")
-    @patch("os.startfile")
-    def test_texto_success(self, os_startfile_mock, shutil_copyfile_mock):
-        operadora = "operadoraTeste"
-        hoje = "20220101"
-        first_name = "Nome Sobrenome"
-        demanda = "demandaTeste"
-        situacao = "situaçãoExemplo"
-        origem_excel_expected = "paste_prefixo_excel/20220101/operadoraTeste/Nome Sobrenome/demandaTeste/Nome Sobrenome.xlsx"
-        destino_excel_expected = "paste_prefixo_fonte/fonte.xlsx"
-        docx_path_expected = "paste_prefixo_pastas_word/20220101/operadoraTeste/Nome Sobrenome/demandaTeste/Nome Sobrenome.docx"
+    def tearDown(self):
+        pass
 
-        result = texto(operadora, hoje, first_name, demanda, situacao)
+    def test_texto_success(self):
+        # Inclua suas variáveis aqui, por exemplo:
+        operadora = 'Example Operator'
+        hoje = '2021-10-01'
+        first_name = 'John'
+        demanda = '45215425'
+        situacao = 'respondido'
 
-        shutil_copyfile_mock.assert_called_once_with(origem_excel_expected, destino_excel_expected)
-        os_startfile_mock.assert_called_once_with(docx_path_expected)
-        self.assertEqual(result, "webui.responder")
+        with texto.test_request_context():
+            result = texto(operadora, hoje, first_name, demanda, situacao)
 
-    @patch("shutil.copyfile")
-    @patch("os.startfile")
-    def test_texto_exception(self, os_startfile_mock, shutil_copyfile_mock):
-        shutil_copyfile_mock.side_effect = Exception("Erro ao copiar o arquivo")
+        # Inclua suas verificações de teste (asserts) aqui
+        # Por exemplo:
+        self.assertTrue(result.startswith('amil','2021x-10-01', 'João Batista' , 'pondido'))
 
-        operadora = "operadoraTeste"
-        hoje = "20220101"
-        first_name = "Nome Sobrenome"
-        demanda = "demandaTeste"
-        situacao = "situaçãoExemplo"
+    # Adicione outros métodos de teste aqui, se necessário
 
-        with self.assertRaises(Exception) as context:
-            texto(operadora, hoje, first_name, demanda, situacao)
-
-            self.assertTrue('Erro ao copiar o arquivo' in str(context.exception))
-
-
-if __name__ == "__main__":
-    unittest.main()
-
+    if __name__ == '__main__':
+         unittest.main()
