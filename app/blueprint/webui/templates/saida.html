@@ -42,30 +42,11 @@
 </head>
 
 <h3>{{mensagem}}</h3>
+
 {% if saida != [] %}
 <h3> Processo finalizado, confira a saida</h3>
-    <table class="table table-striped table-bordered table-hover">
-        <thead>
-            <tr>
-                <th class="cabecalho td-custom">Nome</th>
-                <th class="cabecalho">Demanda</th>
-                <th class="cabecalho">Prazo</th>
-                <th class="cabecalho">Gênero</th>
-                <th class="cabecalho"> Situação </th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for x in saida %}
-            <tr>
-                <td class="td-custom">{{x['Nome']}}</td>
-                <td class="td-custom">{{x['Demanda']}}</td>
-                <td class="td-custom">{{x['Prazo']}}</td>
-                <td class="td-custom">{{x['Gênero']}}</td>
-                <td class="td-custom">{{x['Situaçao']}}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+{{ tabela_html|safe }}
+
 <button type="button" class="btn btn-primary" onclick="window.location.href='/'">Voltar</button>
 </div>
 {% else %}

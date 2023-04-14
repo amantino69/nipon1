@@ -24,17 +24,23 @@ def index():
         operadora = request.form.get('operadora')
         dias = request.form.get('dias')
         saida = MalaDireta.job(operadora, dias)
-
-        return render_template('saida.html', saida=saida)
-
+        tabela = pd.read_excel('planilha/responder.xlsx')
+        tabela_html = tabela.to_html(classes=["table", "table-striped", "table-bordered", "table-hover"], index=False)
+           
+        return render_template('saida.html', tabela_html=tabela_html)
+  
     return render_template('index.html')
 
 
 # Tela de retorno após processar a mala direta e tras um resumo dos beneficiários
 # que se enquadraram nas opções escolhidas
 def saida():
+    tabela = pd.read_excel('planilha/responder.xlsx')
+    tabela_html = tabela.to_html(classes=["table", "table-striped", "table-bordered", "table-hover"], index=False)
 
-    return render_template('saida.html')
+    return render_template('saida.html', tabela_html=tabela_html)
+
+
 
 
 # Essa função permite que o usuário escolha um argumento de pesquisa e uma
