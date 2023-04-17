@@ -145,7 +145,7 @@
       for (var i = 0; i < selecionados.length; i++) {
         var selecionado = selecionados[i];
         selecionado = selecionado.getElementsByTagName("td");
-        dados += "Operadora: " + selecionado[5].innerHTML + " - Hoje: " + selecionado[1].innerHTML + " - Beneficiário: " + selecionado[0].innerHTML + " - Demanda: " + selecionado[3].innerHTML + "\n";
+        dados += "Operadora: " + selecionado[2].innerHTML + " - Hoje: " + selecionado[1].innerHTML + " - Beneficiário: " + selecionado[3].innerHTML + " - Demanda: " + selecionado[4].innerHTML + "\n";
         beneficiario = selecionado[0].innerHTML;
         hoje = selecionado[5].innerHTML;
         operadora = selecionado[1].innerHTML;
@@ -173,7 +173,7 @@
     font-weight: bold;
     background-color: #337ab7; /* Atualizar cor de fundo aqui */
     color: white;
-    font-size: 14px;
+    font-size: 12px;
     padding: 10px 10px; /* Aumentar o padding (vertical) aqui */
   }
 
@@ -181,7 +181,7 @@
     #minhaTabela tr td {
       padding: 5px 10px;
       text-align: left;
-      font-size: 14px;
+      font-size: 12px;
       cursor: pointer;
     }
 

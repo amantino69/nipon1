@@ -45,7 +45,7 @@ class MalaDireta():
     def job(resposta, dias):
         def safe_click(xpath):
             try:
-                element = WebDriverWait(driver, 15).until(
+                element = WebDriverWait(driver, 30).until(
                     EC.presence_of_element_located((By.XPATH, xpath)))
                 element.click()
                 return True
@@ -57,7 +57,7 @@ class MalaDireta():
         # pasta onde o progra será executado ou estar na path
         chrome_options = webdriver.ChromeOptions()
         # Inicia o navegador sem abrir a tela
-        chrome_options.add_argument("--headless")
+        # chrome_options.add_argument("--headless")
         # Ignora erros de certificação digital
         chrome_options.add_argument('ignore-certificate-errors')
 
@@ -66,14 +66,14 @@ class MalaDireta():
 
         # Informa o CPF e a senha
 
-        WebDriverWait(driver, 15).until(
+        WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.ID, 'input-mask')))
         driver.find_element(By.ID, 'input-mask').send_keys(cpf)
         driver.find_element(By.ID, 'mod-login-password').send_keys(senha)
         driver.find_element(By.ID, 'botao').click()
         driver.maximize_window()
 
-        wait = WebDriverWait(driver, 15)  # 15 segundos de tempo limite
+        wait = WebDriverWait(driver, 30)  # 15 segundos de tempo limite
 
         # Recebe o nome da operadora
         caminho_operadora = "//*[contains(text(),'" + resposta + "' )]"
@@ -96,7 +96,7 @@ class MalaDireta():
 
         actions = ActionChains(driver)
 
-        element = WebDriverWait(driver, 15).until(
+        element = WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.XPATH, '//span[text()="Fiscalização"]')))
         e1 = driver.find_element(By.XPATH, '//span[text()="Fiscalização"]')
 
@@ -108,54 +108,48 @@ class MalaDireta():
 
         # mudar para o frame do Espaço NIP Título DEMANDA
         driver.switch_to.frame('frameConteudoDialog')
+        # ----------------------------------------------------------------------
+        # Aguardar o formContent:j_idt85:j_idt220  e clicar
+        wait.until(EC.element_to_be_clickable(
+            (By.ID, 'formContent:j_idt85:j_idt119'))).click()
 
-        table = driver.find_element(
-            By.ID, 'conteudoPrincipal')  # selecionar a tabela
-
-        df = pd.read_html(table.get_attribute('outerHTML'))[
-            1]  # ler a tabela e carrega df
-
-        # selecionar a quantidade de páginas
-        elements = driver.find_elements(By.CLASS_NAME, 'ui-paginator-pages')
-        paginas = elements[-1].text  # pegar o texto da quantidade de páginas
-
-        if len(paginas) > 9:
-            paginas = paginas[:-2]  # remover 2 caracteres se for maior que 9
-        else:
-            paginas = paginas[:-1]  # remover 1 caractere se for menor que 9
-
-        try:
-            if int(paginas) >= 1:  # se tiver mais de uma página
-
-                todasDF = df
-                e = 2
-                # Percorre todas as páginas e acumula o conteúdo em uma única tabela (df)
-                for e in paginas:
-                    driver.find_element(
-                        By.XPATH, '//*[@id="formContent:j_idt85:tbDemandaAguardandoResposta_paginator_bottom\"]/span[4]/span').click()  # clicar na próxima
-
-                    time.sleep(10)
-                    table1 = driver.find_element(
-                        By.ID, 'formContent:j_idt22')
-                    df1 = pd.read_html(table1.get_attribute('outerHTML'))[1]
-                    todasDF = pd.concat([todasDF, df1], ignore_index=True)
-                df = todasDF  # concatenar as duas tabelas
-
-        except:
-            print("Não há mais páginas")
+        # Aguardar a conclusão do doenload do arquivo
+        time.sleep(20)
+                
+                
+        # Criar um dataframe com o Excel 'C:/Users/amantino/Downloads/demandas_aguardando_resposta.xls' a primeira linha é o cabeçalho. 
+        Excel_NIP = pd.read_excel('C:/Users/amantino/Downloads/demandas_aguardando_resposta.xls', header=0)
+        # Os textos do cabeçalho de Excel_NIP e das demais linhas são acentuados no formato portugues do Brasil.
+        
+        # Excluir 'C:/Users/amantino/Downloads/demandas_aguardando_resposta.xls' 
+        os.remove('C:/Users/amantino/Downloads/demandas_aguardando_resposta.xls')
+        
+        # Converter Excel_NIP em dataframe de nome df
+        df = pd.DataFrame(Excel_NIP)              
 
         hoje = time.strftime('%d-%m-%Y')  # data de hoje no formato dd-mm-aaaa
 
-        # inserir coluna Operadora no dataframe df
+        # Acrescente as colunas "Operadora" e Hoje no dataframe df com os conteúdos das variáveis operadora e hoje respectivamente mantendo as demais colulas e seus conteúdos. Essas duas novas colunas devem ser as primeiras colunas do dataframe
         df.insert(0, 'Operadora', operadora)
-        df.insert(0, 'Hoje', hoje)  # inserir coluna Hoje no dataframe df
+        df.insert(1, 'Hoje', hoje)
+                  
+        # Substituir os conteúdos do cabeçalho de df para os conteúdos da lista abaixo
+        # ['Operadora', 'Hoje', 'NIP', 'Notificação', 'Demanda', 'Protocolo', 'Beneficiário', 'CPF', 'Descrição', 'Prazo', 'Respondido', 'Natureza']
+        df.columns = ['Operadora', 'Hoje', 'Notificação', 'Demanda', 'Protocolo', 'Beneficiário', 'CPF', 'Descrição', 'Prazo', 'Respondido', 'Natureza']
+        
+                
 
         if not os.path.exists('planilha'):
             os.makedirs('planilha')  # criar pasta planilha se não existir
 
-        responder = df[(df['Prazo'] == dias + " dias úteis")
-                       & (df['Respondido'] == 'NO')]  # selecionar as linhas que tem o prazo igual ao dia de hoje
+        # Criar o DataFrame responder apenas com as linhas onde Prazo == dias e Respondido == 'NO'
 
+        dia_compara = int(dias)
+                 
+                                       
+        responder = df[(df['Prazo'] == dia_compara) & (df['Respondido'] == 'NO')]
+        
+              
         # salvar o dataframe responder em um arquivo excel
         responder.to_excel('planilha/responder.xlsx', index=False)
         # salvar o dataframe df em um arquivo excel
@@ -167,18 +161,16 @@ class MalaDireta():
 
             for j in range(len(df)):  # Percorre todas as linhas do dataframe df
                 linhas = len(df)  # quantidade de linhas do dataframe df
-                # print(" J ======================================================: ", j)
-                # print(
-                #     " linhas ======================================================: ", linhas)
                 # seleciona o nome do beneficiário
                 first_name = df.loc[j, 'Beneficiário']
                 prazo = df.loc[j, 'Prazo']  # seleciona o prazo
-                demanda = int(df.loc[j, 'Demanda'])  # seleciona a demanda
+                demanda = df.loc[j, 'Demanda']  # seleciona a demanda
                 # seleciona se a demanda foi respondida ou não
                 respondido = df.loc[j, 'Respondido']
 
                 # se o prazo for igual ao dia de hoje e a demanda não foi respondida
-                if prazo == (dias + ' dias úteis') and (respondido == 'NO'):
+                
+                if prazo == int(dias) and respondido == 'NO':
                     # separa o nome do beneficiário em primeiro nome e sobrenome
                     name = HumanName(first_name)
                     # capitaliza o primeiro nome e o sobrenome
@@ -193,23 +185,15 @@ class MalaDireta():
                     # cria a pasta para salvar o arquivo excel
                     os.makedirs(demanda_path_excel, exist_ok=True)
 
-                    # print("Linha =================================================: ", j+1, " de ", linhas, " linhas")
-                    # print("df======================================================: ",df)
-                    # print("demanda_path_word======================================================: ",demanda_path_word)
-                    # print(" J ======================================================: ",j)
-                    # print(" Demanda ======================================================: ",demanda)
-                    print(
-                        " Nome ======================================================: ", first_name)
-                    # print(" dias ======================================================: ", dias)
-                    # print(" Prazo ======================================================: ", prazo)
-
                     try:
                         # clicar no botão de pesquisar DEMANDA
+                        time.sleep(10)
                         driver.find_element(
                             By.XPATH, '//*[@id="formContent:j_idt81"]/span ').click()
                         time.sleep(10)
                         driver.find_element(By.ID, 'formContent:idObjeto').send_keys(
                             demanda)  # digitar o número da demanda
+                        time.sleep(10)
                         # clicar no botão de BUSCAR
                         driver.find_element(
                             By.ID, 'formContent:j_idt82').click()
@@ -223,14 +207,15 @@ class MalaDireta():
                         pass
 
                     # seleciona toda a tabela DEMANDA
-                    resumo = wait.until(EC.presence_of_element_located((By.ID, 'formContent')))
+                    resumo = wait.until(
+                        EC.presence_of_element_located((By.ID, 'formContent')))
                     nip_tables = [pd.read_html(resumo.get_attribute('outerHTML'))[
                         i] for i in range(6)]  # ler a tabela e carrega df
                     nip = pd.concat(nip_tables, ignore_index=True)
                     nip = nip.iloc[:, 0].drop(nip.index[-3:]).str.replace('?', ':').str.split(
                         ':', n=1, expand=True)  # separa a coluna 0 em duas colunas
                     try:
-                        element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable(
+                        element = WebDriverWait(driver, 30).until(EC.element_to_be_clickable(
                             (By.ID, 'formContent:j_idt203:0:j_idt214')))  # Clicar no botão de VISUALIZAR
                         element.click()
                     except TimeoutException:
@@ -238,13 +223,13 @@ class MalaDireta():
                             driver.find_element(
                                 By.ID, 'formContent:j_idt191:0:j_idt202').click()
                         except NoSuchElementException:
-                            pass
-                    
+                            print(
+                                "======================Não foi possível clicar no botão VISUALIZAR =============")
 
                     # seleciona a tabela DOCUMENTO
-                    documento = wait.until(EC.presence_of_element_located((By.ID, 'formContent:dlgDocumento')))
-                    
-                    
+                    documento = wait.until(EC.presence_of_element_located(
+                        (By.ID, 'formContent:dlgDocumento')))
+
                     notifica = pd.read_html(documento.get_attribute('outerHTML'))[
                         0].drop_duplicates()
                     protocolo = driver.find_element(
@@ -319,7 +304,7 @@ class MalaDireta():
                         # clicar no botão de VOLTAR
                         driver.find_element(
                             By.ID, 'formContent:j_idt220').click()
-
+                        
                     shutil.copy(
                         f'grifos/{operadora}.docx', (f'{prefixo_pastas_word}/{hoje}/{operadora}/{name}/{demanda}/{name}.docx'))  # copia o arquivo word para a pasta
 

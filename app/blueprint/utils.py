@@ -33,6 +33,12 @@ def find_gender(nome):
     # para a pasta \Documents\Minhas fontes de dados antes de realizar a mesclagem
 
 def texto(operadora, hoje, first_name, demanda, situacao):
+    print("=========================================", f"Operadora: {operadora}")
+    print("=========================================", f"Data: {hoje}")
+    print("=========================================", f"Nome: {first_name}")
+    print("=========================================", f"Demanda: {demanda}")
+    print("=========================================", f"Situação: {situacao}")
+
 
     # Chama a funcão para capitular os nomes de pessoas de forma correta.
     # Esse nome será utilizado para criar a beneficiário mantendo o padrão de
@@ -44,15 +50,21 @@ def texto(operadora, hoje, first_name, demanda, situacao):
     origem_excel = (
         f'{prefixo_pastas_excel}/{hoje}/{operadora}/{name}/{demanda}/{name}.xlsx')
     destino_excel = (f'{prefixo_fonte}/fonte.xlsx')
+    
+    print("Origem Excel===========================================", f'{prefixo_pastas_excel}/{hoje}/{operadora}/{name}/{demanda}/{name}.xlsx')    
 
     try:
         shutil.copyfile(origem_excel, destino_excel)
-        os.startfile(
-            f"{prefixo_pastas_word}/{hoje}/{operadora}/{name}/{demanda}/{name}.docx")
-    except:
-        print('Erro ao copiar o arquivo')
+        os.startfile(f"{prefixo_pastas_word}/{hoje}/{operadora}/{name}/{demanda}/{name}.docx")
+        print('Arquivo copiado com sucesso')
+    
+        # Imprimir f"{prefixo_pastas_word}/{hoje}/{operadora}/{name}/{demanda}/{name}.docx")
+        print(" Arqui que será aberto===========================================", f"{prefixo_pastas_word}/{hoje}/{operadora}/{name}/{demanda}/{name}.docx")     
 
-    return (url_for('webui.responder'))
+    except Exception as e:
+        print("=========================================", f"Erro ao copiar o arquivo: {e}")
+
+    return url_for('webui.responder')
 
 def carta(responder):
     try:

@@ -131,7 +131,12 @@ def responder():
         demanda = request.form.get('demanda')
         situacao = request.form.get('situacao')
         opcao = texto(
-            operadora, hoje, first_name, demanda, situacao)
+             hoje, operadora, first_name, demanda, situacao)
+        print("=========================================", f"Operadora: {operadora}")
+        print("=========================================", f"Data: {hoje}")
+        print("=========================================", f"Nome: {first_name}")
+        print("=========================================", f"Demanda: {demanda}")
+        print("=========================================", f"Situação: {situacao}")
 
     resposta = carta(responder)
     colunas = resposta.columns.values
