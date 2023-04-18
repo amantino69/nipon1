@@ -125,7 +125,7 @@ def tarefas():
 
 def responder():
     if request.method == 'POST':
-        operadora = request.form.get('operadora')
+        operadora = request.form.get('operadora') 
         hoje = request.form.get('hoje')
         first_name = request.form.get('beneficiario')
         demanda = request.form.get('demanda')
