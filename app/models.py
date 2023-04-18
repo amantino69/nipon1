@@ -133,11 +133,14 @@ class MalaDireta():
         # Acrescente as colunas "Operadora" e Hoje no dataframe df com os conteúdos das variáveis operadora e hoje respectivamente mantendo as demais colulas e seus conteúdos. Essas duas novas colunas devem ser as primeiras colunas do dataframe
         df.insert(0, 'Operadora', operadora)
         df.insert(1, 'Hoje', hoje)
+        df.insert(11, 'Contrato', '')
+        df.insert(12, 'Registro', '')
+        df.insert(13, 'Modalidade', '')
 
         # Substituir os conteúdos do cabeçalho de df para os conteúdos da lista abaixo
         # ['Operadora', 'Hoje', 'NIP', 'Notificação', 'Demanda', 'Protocolo', 'Beneficiário', 'CPF', 'Descrição', 'Prazo', 'Respondido', 'Natureza']
         df.columns = ['Operadora', 'Hoje', 'Notificação', 'Demanda', 'Protocolo',
-                      'Beneficiário', 'CPF', 'Descrição', 'Prazo', 'Respondido', 'Natureza']
+                      'Beneficiário', 'CPF', 'Descrição', 'Prazo', 'Respondido', 'Natureza', 'Contrato', 'Registro', 'Modalidade']
 
         if not os.path.exists('planilha'):
             os.makedirs('planilha')  # criar pasta planilha se não existir
@@ -152,6 +155,7 @@ class MalaDireta():
         # salvar o dataframe responder em um arquivo excel
         responder.to_excel('planilha/responder.xlsx', index=False)
         # salvar o dataframe df em um arquivo excel
+        
         df.to_excel('planilha/tarefas.xlsx', engine='xlsxwriter')
 
         dict_info = []
@@ -186,13 +190,11 @@ class MalaDireta():
 
                     try:
                         # clicar no botão de pesquisar DEMANDA
-                        time.sleep(10)
-                        driver.find_element(
-                            By.XPATH, '//*[@id="formContent:j_idt81"]/span ').click()
+                        wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="formContent:j_idt81"]/span'))).click()
                         time.sleep(10)
                         driver.find_element(By.ID, 'formContent:idObjeto').send_keys(
                             demanda)  # digitar o número da demanda
-                        time.sleep(10)
+                        time.sleep(15)
                         # clicar no botão de BUSCAR
                         driver.find_element(
                             By.ID, 'formContent:j_idt82').click()
