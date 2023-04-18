@@ -108,36 +108,36 @@ class MalaDireta():
 
         # mudar para o frame do Espaço NIP Título DEMANDA
         driver.switch_to.frame('frameConteudoDialog')
-        # ----------------------------------------------------------------------
+
         # Aguardar o formContent:j_idt85:j_idt220  e clicar
         wait.until(EC.element_to_be_clickable(
             (By.ID, 'formContent:j_idt85:j_idt119'))).click()
 
         # Aguardar a conclusão do doenload do arquivo
         time.sleep(20)
-                
-                
-        # Criar um dataframe com o Excel 'C:/Users/amantino/Downloads/demandas_aguardando_resposta.xls' a primeira linha é o cabeçalho. 
-        Excel_NIP = pd.read_excel('C:/Users/amantino/Downloads/demandas_aguardando_resposta.xls', header=0)
+
+        # Utilizei a planilha que o Espaço Nip disponibiliza para download para criar um dataframe com o Excel 'C:/Users/amantino/Downloads/demandas_aguardando_resposta.xls' a primeira linha é o cabeçalho.
+        # Criar um dataframe com o Excel 'C:/Users/amantino/Downloads/demandas_aguardando_resposta.xls' a primeira linha é o cabeçalho.
+        Excel_NIP = pd.read_excel(
+            'C:/Users/amantino/Downloads/demandas_aguardando_resposta.xls', header=0)
         # Os textos do cabeçalho de Excel_NIP e das demais linhas são acentuados no formato portugues do Brasil.
-        
-        # Excluir 'C:/Users/amantino/Downloads/demandas_aguardando_resposta.xls' 
+
+        # Excluir 'C:/Users/amantino/Downloads/demandas_aguardando_resposta.xls'
         os.remove('C:/Users/amantino/Downloads/demandas_aguardando_resposta.xls')
-        
+
         # Converter Excel_NIP em dataframe de nome df
-        df = pd.DataFrame(Excel_NIP)              
+        df = pd.DataFrame(Excel_NIP)
 
         hoje = time.strftime('%d-%m-%Y')  # data de hoje no formato dd-mm-aaaa
 
         # Acrescente as colunas "Operadora" e Hoje no dataframe df com os conteúdos das variáveis operadora e hoje respectivamente mantendo as demais colulas e seus conteúdos. Essas duas novas colunas devem ser as primeiras colunas do dataframe
         df.insert(0, 'Operadora', operadora)
         df.insert(1, 'Hoje', hoje)
-                  
+
         # Substituir os conteúdos do cabeçalho de df para os conteúdos da lista abaixo
         # ['Operadora', 'Hoje', 'NIP', 'Notificação', 'Demanda', 'Protocolo', 'Beneficiário', 'CPF', 'Descrição', 'Prazo', 'Respondido', 'Natureza']
-        df.columns = ['Operadora', 'Hoje', 'Notificação', 'Demanda', 'Protocolo', 'Beneficiário', 'CPF', 'Descrição', 'Prazo', 'Respondido', 'Natureza']
-        
-                
+        df.columns = ['Operadora', 'Hoje', 'Notificação', 'Demanda', 'Protocolo',
+                      'Beneficiário', 'CPF', 'Descrição', 'Prazo', 'Respondido', 'Natureza']
 
         if not os.path.exists('planilha'):
             os.makedirs('planilha')  # criar pasta planilha se não existir
@@ -145,11 +145,10 @@ class MalaDireta():
         # Criar o DataFrame responder apenas com as linhas onde Prazo == dias e Respondido == 'NO'
 
         dia_compara = int(dias)
-                 
-                                       
-        responder = df[(df['Prazo'] == dia_compara) & (df['Respondido'] == 'NO')]
-        
-              
+
+        responder = df[(df['Prazo'] == dia_compara)
+                       & (df['Respondido'] == 'NO')]
+
         # salvar o dataframe responder em um arquivo excel
         responder.to_excel('planilha/responder.xlsx', index=False)
         # salvar o dataframe df em um arquivo excel
@@ -169,7 +168,7 @@ class MalaDireta():
                 respondido = df.loc[j, 'Respondido']
 
                 # se o prazo for igual ao dia de hoje e a demanda não foi respondida
-                
+
                 if prazo == int(dias) and respondido == 'NO':
                     # separa o nome do beneficiário em primeiro nome e sobrenome
                     name = HumanName(first_name)
@@ -304,7 +303,7 @@ class MalaDireta():
                         # clicar no botão de VOLTAR
                         driver.find_element(
                             By.ID, 'formContent:j_idt220').click()
-                        
+
                     shutil.copy(
                         f'grifos/{operadora}.docx', (f'{prefixo_pastas_word}/{hoje}/{operadora}/{name}/{demanda}/{name}.docx'))  # copia o arquivo word para a pasta
 
