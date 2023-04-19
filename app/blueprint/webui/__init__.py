@@ -1,5 +1,5 @@
 from flask import Blueprint
-from .views import index, saida, responder, tarefas, agendar
+from .views import index, saida, responder, tarefas, agendar, carga, update_data
 from ..utils import find_gender
 
 
@@ -10,6 +10,8 @@ bp.add_url_rule("/saida/", view_func=saida , methods=['POST', 'GET'])
 bp.add_url_rule("/responder/", view_func=responder, methods=['POST', 'GET'])
 bp.add_url_rule("/tarefas/", view_func=tarefas, methods=['POST', 'GET'])
 bp.add_url_rule("/agendar/", view_func=agendar, methods=['POST', 'GET'])
+bp.add_url_rule("/carga/", view_func=carga, methods=['POST', 'GET'])
+bp.add_url_rule("/update/", view_func=update_data, methods=['POST', 'GET'])
 
 
 

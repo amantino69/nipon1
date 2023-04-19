@@ -47,41 +47,45 @@ def index():
 def carga():
    
    if request.method == 'POST':
-       print("===================================================================estou aqui================")
-       data = request.get_json(force=True)
-       df = pd.read_excel('planilha/responder.xlsx')
-
-       for key, values in data.items():
-            index = int(key)
-            df.at[index, 'contrato'] = values['contrato']
-            df.at[index, 'modalidade'] = values['modalidade']
-            df.at[index, 'registro'] = values['registro']
+        try:
+            data2 = request.get_json(force=True)
+            print("data's type is: ", type(data2))
+            print("data's content is: ", data2)   
+        except Exception as e:
+            print(e)    
+        data = request.form.get('teste')
+        print(data)
         
-       df.to_excel('planilha/responder.xlsx', index=False)
-       return jsonify({'success': True})
-   
+  
+    # atualize o valor no banco de dados
+    # redirecione para a página de exibição dos dados atualizados
+
+        return data
+        #  df = pd.read_excel('planilha/responder.xlsx')
+        #  for key, values in data.items():
+        #       index = int(key)
+        #       df.at[index, 'contrato'] = values['contrato']
+        #       df.at[index, 'modalidade'] = values['modalidade']
+        #       df.at[index, 'registro'] = values['registro']
+         
+        #  df.to_excel('planilha/responder.xlsx', index=False)
+        #  return jsonify({'success': True})
+
    df = pd.read_excel('planilha/responder.xlsx')
    return render_template('carga.html', df=df)
 
 
 def update_data():
-   print("===================================================================estou aqui================") 
-   if request.method == 'POST':
-       print("===================================================================estou aqui================")
-       data = request.get_json(force=True)
-       df = pd.read_excel('planilha/responder.xlsx')
-
-       for key, values in data.items():
-            index = int(key)
-            df.at[index, 'contrato'] = values['contrato']
-            df.at[index, 'modalidade'] = values['modalidade']
-            df.at[index, 'registro'] = values['registro']
-        
-       df.to_excel('planilha/responder.xlsx', index=False)
-       return jsonify({'success': True})
-   
-   df = pd.read_excel('planilha/responder.xlsx')
-   return render_template('carga.html', df=df)
+    data = request.get_json(force=True)
+    df = pd.read_excel('planilha/responder.xlsx')
+    for key, values in data.items():
+        index = int(key)
+        df.at[index, 'contrato'] = values['contrato']
+        df.at[index, 'modalidade'] = values['modalidade']
+        df.at[index, 'registro'] = values['registro']
+    
+    df.to_excel('planilha/responder.xlsx', index=False)
+    return jsonify({'success': True})
 
 
 
