@@ -49,33 +49,15 @@ def carga():
    if request.method == 'POST':
        print("===================================================================estou aqui================")
        data = request.get_json(force=True)
+       print("===================================================================  data ==============", data)
        df = pd.read_excel('planilha/responder.xlsx')
+       print("===================================================================  df ==============", )
 
        for key, values in data.items():
             index = int(key)
-            df.at[index, 'contrato'] = values['contrato']
-            df.at[index, 'modalidade'] = values['modalidade']
-            df.at[index, 'registro'] = values['registro']
-        
-       df.to_excel('planilha/responder.xlsx', index=False)
-       return jsonify({'success': True})
-   
-   df = pd.read_excel('planilha/responder.xlsx')
-   return render_template('carga.html', df=df)
-
-
-def update_data():
-   print("===================================================================estou aqui================") 
-   if request.method == 'POST':
-       print("===================================================================estou aqui================")
-       data = request.get_json(force=True)
-       df = pd.read_excel('planilha/responder.xlsx')
-
-       for key, values in data.items():
-            index = int(key)
-            df.at[index, 'contrato'] = values['contrato']
-            df.at[index, 'modalidade'] = values['modalidade']
-            df.at[index, 'registro'] = values['registro']
+            df.at[index, 'Contrato'] = values['Contrato']
+            df.at[index, 'Modalidade'] = values['Modalidade']
+            df.at[index, 'Registro'] = values['Registro']
         
        df.to_excel('planilha/responder.xlsx', index=False)
        return jsonify({'success': True})
