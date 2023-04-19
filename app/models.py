@@ -133,12 +133,11 @@ class MalaDireta():
         # Acrescente as colunas "Operadora" e Hoje no dataframe df com os conteúdos das variáveis operadora e hoje respectivamente mantendo as demais colulas e seus conteúdos. Essas duas novas colunas devem ser as primeiras colunas do dataframe
         df.insert(0, 'Operadora', operadora)
         df.insert(1, 'Hoje', hoje)
-        df.insert(11, 'Contrato', '')
-        df.insert(12, 'Registro', '')
-        df.insert(13, 'Modalidade', '')
+        df.insert(11, 'Contrato', 'XXXXXXX')
+        df.insert(12, 'Registro', 'YYYYYYY')
+        df.insert(13, 'Modalidade', 'ZZZZZZZ')
 
         # Substituir os conteúdos do cabeçalho de df para os conteúdos da lista abaixo
-        # ['Operadora', 'Hoje', 'NIP', 'Notificação', 'Demanda', 'Protocolo', 'Beneficiário', 'CPF', 'Descrição', 'Prazo', 'Respondido', 'Natureza']
         df.columns = ['Operadora', 'Hoje', 'Notificação', 'Demanda', 'Protocolo',
                       'Beneficiário', 'CPF', 'Descrição', 'Prazo', 'Respondido', 'Natureza', 'Contrato', 'Registro', 'Modalidade']
 

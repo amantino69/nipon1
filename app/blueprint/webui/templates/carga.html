@@ -50,9 +50,9 @@
       $('#table tbody tr').each(function(i, row) {
         var cells = $(row).find('td');
         updates[i] = {
-          'contrato': cells.eq(-3).text(),
-          'modalidade': cells.eq(-2).text(),
-          'registro': cells.eq(-1).text(),
+          'Contrato': cells.eq(-3).text(),
+          'Modalidade': cells.eq(-2).text(),
+          'Registro': cells.eq(-1).text(),
         }
       });
       $.ajax({
