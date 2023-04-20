@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block titulo %}
-  Resumo
+Direcionador
 {% endblock %}
 
 {% block menu %}
@@ -11,6 +11,7 @@
     <span class="nav-link">Processar</span>
   </a>
 </li>
+
 <li>
   <a href="{{url_for('webui.responder') }}">
     <i class="fa fa-envelope"></i>
@@ -19,7 +20,7 @@
 </li>
 
 <li>
-  <a class="active" href="{{url_for('webui.saida') }}">
+  <a href="{{url_for('webui.saida') }}">
     <i class="fa fa-envelope"></i>
     <span class="nav-link">Resumo </span>
   </a>
@@ -40,7 +41,7 @@
 </li>
 
 <li>
-  <a href="{{url_for('webui.direcionador') }}">
+  <a class="active" href="{{url_for('webui.direcionador') }}">
     <i class="fa fa-envelope"></i>
     <span class="nav-link">Direcionador </span>
   </a>
@@ -50,66 +51,54 @@
 
 {% block content %}
 
-<head>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/montar_agenda.css') }}">
-</head>
+<form action="{{url_for('webui.direcionador')}}" method="POST">
+  <div class="container">
+    <div class="message">{{mensagem}}</div>
+    <div class="file">{{arquivo_recente}}</div>
+    <div class="file">{{data}}</div>
+  </div>
+  <div>
+    {{ direcionador_HAP|safe }}
 
-<h3>{{mensagem}}</h3>
+  </div>
 
-{% if saida != [] %}
-<h3> Processo finalizado, confira a saida</h3>
-{{ tabela_html|safe }}
+  <button type="button" class="btn btn-primary"
+    onclick="window.location.href='/'">Voltar</button>
+  <button type="submit" class="btn btn-primary" name="executar" id="executar"
+    onclick="carga('executar')">Executar</button>
+</form>
 
-<button type="button" class="btn btn-primary" onclick="window.location.href='/'">Voltar</button>
-</div>
-{% else %}
-<h3> Não há NIPs para serem processadas para o período selecionado</h3>
-{% endif %}
-
- 
 
 <style>
   body {
     font-family: sans-serif;
   }
 
-  #minhaTabela thead th {
-    font-weight: bold;
-    background-color: black;
-    color: white;
-
-    padding: 5px 10px;
-  }
-
-  #minhaTabela tr td {
-    padding: 5px 10px;
-    text-align: left;
-
-    cursor: pointer;
-    /*importante para não mostrar cursor de texto*/
-  }
-
-  #minhaTabela tr td:last-child {
-    text-align: right;
-  }
-
-  /*Cores*/
-  #minhaTabela tr:nth-child(odd) {
-    background-color: #eee;
-  }
-
-  /*Cor quando passar por cima*/
-  #minhaTabela tr:hover td {
-    background-color: #b8b7db;
-  }
-
-  /*Cor quando selecionado*/
-  #minhaTabela tr.selecionado td {
-    background-color: #1fc71f;
-  }
-
-
-
+  .table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 12px;
+  font-family: Arial, sans-serif;
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
+.table th,
+.table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+.table th {
+  font-weight: bold;
+  background: #f5f5f5;
+}
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: #f9f9f9;
+}
+.table-hover tbody tr:hover {
+  background-color: #f5f5f5;
+}
 
   footer.fixar-rodape {
     border-top: 1px solid #333;
@@ -156,6 +145,24 @@
 .nav-link {
 font-size: 18px;
 }
+
+.container {
+  border: 1px solid #ccc;
+  margin: 20px 0;
+  padding: 10px;
+}
+
+.message {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.file {
+  font-size: 14px;
+  color: #666;
+}
+
 
 </style>
 

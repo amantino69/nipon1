@@ -19,7 +19,7 @@ Resumo
 </li>
 
 <li>
-  <a class="active" href="{{url_for('webui.saida') }}">
+  <a href="{{url_for('webui.saida') }}">
     <i class="fa fa-envelope"></i>
     <span class="nav-link">Resumo </span>
   </a>
@@ -38,6 +38,14 @@ Resumo
     <span class="nav-link">Carga </span>
   </a>
 </li>
+
+<li>
+  <a class="active" href="{{url_for('webui.direcionador') }}">
+    <i class="fa fa-envelope"></i>
+    <span class="nav-link">Carga </span>
+  </a>
+</li>
+
 {% endblock %}
 
 {% block content %}

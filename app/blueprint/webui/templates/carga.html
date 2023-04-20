@@ -39,6 +39,14 @@ Resumo
   </a>
 </li>
 
+<li>
+  <a href="{{url_for('webui.direcionador') }}">
+    <i class="fa fa-envelope"></i>
+    <span class="nav-link">Direcionador </span>
+  </a>
+</li>
+
+
 {% endblock %}
 
 {% block content %}
@@ -94,13 +102,12 @@ Resumo
       </tbody>
     </table>
   </div>
+
+
+  <button type="submit" class="btn btn-primary" name="salvar" id="salvar" onclick="saveTable()">Salvar</button>
+  <button type="button" class="btn btn-primary" onclick="window.location.href='/'">Voltar</button>
+
 </form>
-
-<button type="submit" class="btn btn-primary" onclick="saveTable()"
-  name="salvar">Salvar</button>
-<button type="button" class="btn btn-primary"
-  onclick="window.location.href='/'">Voltar</button>
-
 
 <style>
   body {
