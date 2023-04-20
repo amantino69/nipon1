@@ -46,7 +46,7 @@ def index():
 
 def carga():
    
-   if request.method == 'POST' :
+   if request.method == 'POST':
     # Código que será executado caso o botão "meuId" seja clicado
 
        print("===================================================================estou aqui================")
@@ -63,9 +63,9 @@ def carga():
         
        df.to_excel('planilha/responder.xlsx', index=False)
        return jsonify({'success': True})
+       
    
    df = pd.read_excel('planilha/responder.xlsx')
-   
    return render_template('carga.html', df=df)
 
 
