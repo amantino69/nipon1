@@ -20,6 +20,8 @@ import shutil
 import re
 import time
 import pandas as pd
+import datetime
+import glob
 
 
 load_dotenv()
@@ -122,12 +124,41 @@ class MalaDireta():
             'C:/Users/amantino/Downloads/demandas_aguardando_resposta.xls', header=0)
         # Os textos do cabeçalho de Excel_NIP e das demais linhas são acentuados no formato portugues do Brasil.
 
+        # buscar  mais recente e data de alteração do arquivo do direcionador da Hapvida 
+        lista_arquivos = glob.glob("C:/Users/amantino/Downloads/*direcionamento*.xlsx")
+        arquivo_recente = max(lista_arquivos, key=os.path.getctime)
+        # Capturar a data de alteração do arquivo mais recente
+        data = datetime.datetime.fromtimestamp(os.path.getmtime(arquivo_recente))
+        direcionador_hapvida= pd.read_excel(arquivo_recente, header=0)
+        # formatar direcionador_hapvida como dataframe
+        direcionador_hapvida = pd.DataFrame(direcionador_hapvida)
+
+        
+        # se operadora contiver a string 'Hapvida' em maiúsculo ou minúsculo
+      
+
         # Excluir 'C:/Users/amantino/Downloads/demandas_aguardando_resposta.xls'
         os.remove('C:/Users/amantino/Downloads/demandas_aguardando_resposta.xls')
 
-        # Converter Excel_NIP em dataframe de nome df
-        df = pd.DataFrame(Excel_NIP)
-
+        # Conferte Excel_NIP para dataframe
+        Excel_NIP = pd.DataFrame(Excel_NIP)
+        # Converte Direcionamento para dataframe 
+        direcionador_hapvida = pd.DataFrame(direcionador_hapvida)
+        # Atrinir cabalhahos a Excel_NIP: data, demanda, protocolo, beneficiario, cpf, descricao, prazo, respondido, natureza
+        Excel_NIP.columns = ['Data', 'Demanda', 'Protocolo', 'Beneficiário', 'cpf', 'descrição', 'Prazo', 'Respondido', 'Natureza']
+        print("=========== Excel_NIP  =============================================", Excel_NIP) 
+        
+        #Atribuir cabelhahos a direcionador_hapvida: natureza, demanda, data, prazo5, prazo10, operadora, area, link, uf, responsavel, assunto, escritorio 
+        direcionador_hapvida.columns = ["natureza", "Demanda", "data", "prazo5", "prazo10", "operadora", "area", "link", "uf", "responsavel", "assunto", "escritorio"]
+        print("===========  direcionador_hapvida  =============================================", direcionador_hapvida)             
+        # Deixar em Excel_NIP apenas as linhas  que coincidams com Direcionamento na coluna "demanda" 
+         
+        df = Excel_NIP[Excel_NIP['Demanda'].isin(direcionador_hapvida['Demanda'])]
+        # elimine linha vazias em df
+        df = df.dropna()
+        
+        
+        
         hoje = time.strftime('%d-%m-%Y')  # data de hoje no formato dd-mm-aaaa
 
         # Acrescente as colunas "Operadora" e Hoje no dataframe df com os conteúdos das variáveis operadora e hoje respectivamente mantendo as demais colulas e seus conteúdos. Essas duas novas colunas devem ser as primeiras colunas do dataframe
@@ -147,28 +178,53 @@ class MalaDireta():
         # Criar o DataFrame responder apenas com as linhas onde Prazo == dias e Respondido == 'NO'
 
         dia_compara = int(dias)
-
+        
         responder = df[(df['Prazo'] == dia_compara)
                        & (df['Respondido'] == 'NO')]
+        
+        print("===========Responder depois  =============================================", responder)
 
         # salvar o dataframe responder em um arquivo excel
         responder.to_excel('planilha/responder.xlsx', index=False)
         # salvar o dataframe df em um arquivo excel
         
         df.to_excel('planilha/tarefas.xlsx', engine='xlsxwriter')
+        
+        print("////////////////////////////////////////df.colluns ///////////////////////", df.columns)
+        print("////////////////////////////////////////df.colluns ///////////////////////", df.index)
+        Demanda1 = df.iloc[0, 3]
+        prazo1 = df.iloc[0, 8]
+        Demanda2 = df.iloc[1, 3]
+        prazo2 = df.iloc[1, 8]
+        Demanda3 = df.iloc[2, 3]
+        prazo3 = df.iloc[2, 8]
+        print("===========Demanda1  =============================================", Demanda1)
+        print("===========prazo1  =============================================", prazo1)
+        print("===========Demanda2  =============================================", Demanda2)
+        print("===========prazo2  =============================================", prazo2)
+        print("===========Demanda3  =============================================", Demanda3)
+        print("===========prazo3  =============================================", prazo3)
+        
+
+                    
+        
 
         dict_info = []
 
-        if len(responder) > 0:
-
+        if not df.empty:
+            j = 1
             for j in range(len(df)):  # Percorre todas as linhas do dataframe df
+                print(" df>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", df)
                 linhas = len(df)  # quantidade de linhas do dataframe df
+                print ("linhas>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", linhas)
                 # seleciona o nome do beneficiário
-                first_name = df.loc[j, 'Beneficiário']
-                prazo = df.loc[j, 'Prazo']  # seleciona o prazo
-                demanda = df.loc[j, 'Demanda']  # seleciona a demanda
+                demanda = df.iloc[j, 3]  # seleciona a demanda
+                print("prazo>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", demanda)
+                prazo = df.iloc[j, 8]  # seleciona o prazo
+                print("prazo>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", prazo)
+                first_name = df.iloc[j, 5]
                 # seleciona se a demanda foi respondida ou não
-                respondido = df.loc[j, 'Respondido']
+                respondido = df.iloc[j, 9]
 
                 # se o prazo for igual ao dia de hoje e a demanda não foi respondida
 
