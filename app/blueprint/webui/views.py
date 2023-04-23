@@ -1,3 +1,4 @@
+
 from workadays import workdays as wd
 from apiclient.discovery import build
 from googleapiclient.errors import HttpError
@@ -8,9 +9,9 @@ import smtplib
 from flask import render_template, request, jsonify
 from app.models import MalaDireta
 import __future__
+import datetime
 import pandas as pd
 import os
-import datetime
 import base64
 from email.mime.text import MIMEText
 from app.blueprint.utils import texto
@@ -26,8 +27,8 @@ import glob
 # e qual para quantidades de dias quer tratar as NIPs
 
 # Eu
-prefixo_pastas_word = "C:/Users/amantino/Documents/NIPs"
-prefixo_pastas_excel = "C:/Users/amantino/Documents/fontes"
+prefixo_pastas_word = "C:/Users/amantino/documents"
+prefixo_pastas_excel = "C:/Users/amantino/documents/fontes"
 prefixo_fonte = "C:/Users/amantino/documents/Minhas fontes de dados"
 
 
@@ -94,35 +95,36 @@ def saida():
 
 
 # *************************************************************************
-def texto(operadora, hoje, first_name, demanda, situacao):
-    # Chama a funcão para capitular os nomes de pessoas de forma correta.
-    # Esse nome será utilizado para criar a beneficiário mantendo o padrão de
-    # da empresa que não utiliza caixa alta nos nomes das pastas
+# def texto(operadora, hoje, first_name, demanda, situacao):
+#     # Chama a funcão para capitular os nomes de pessoas de forma correta.
+#     # Esse nome será utilizado para criar a beneficiário mantendo o padrão de
+#     # da empresa que não utiliza caixa alta nos nomes das pastas
 
-    name = HumanName(first_name)
-    name.capitalize(force=True)
+#     name = HumanName(first_name)
+#     name.capitalize(force=True)
+#     hoje = datetime.datetime.now().strftime('%d/%m/%Y')
 
-    origem_excel = (
-        f"{prefixo_pastas_excel}/{hoje}/{operadora}/{name}/{demanda}/{name}.xlsx"
-    )
-    destino_excel = f"{prefixo_fonte}/fonte.xlsx"
+#     origem_excel = (
+#         f"{prefixo_pastas_excel}/{hoje}/{operadora}/{name}/{demanda}/{name}.xlsx"
+#     )
+#     destino_excel = f"{prefixo_fonte}/fonte.xlsx"
 
-    try:
-        shutil.copyfile(origem_excel, destino_excel)
-        os.startfile(
-            f"{prefixo_pastas_word}/{hoje}/{operadora}/{name}/{demanda}/{name}.docx"
-        )
-        print("Arquivo copiado com sucesso")
+#     try:
+#         shutil.copyfile(origem_excel, destino_excel)
+#         os.startfile(
+#             f"{prefixo_pastas_word}/{hoje}/{operadora}/{name}/{demanda}/{name}.docx"
+#         )
+#         print("Arquivo copiado com sucesso")
 
-        # Imprimir f"{prefixo_pastas_word}/{hoje}/{operadora}/{name}/{demanda}/{name}.docx")
+#         # Imprimir f"{prefixo_pastas_word}/{hoje}/{operadora}/{name}/{demanda}/{name}.docx")
 
-    except Exception as e:
-        print(
-            "=========================================",
-            f"Erro ao copiar o arquivo: {e}",
-        )
+#     except Exception as e:
+#         print(
+#             "=========================================",
+#             f"Erro ao copiar o arquivo: {e}",
+#         )
 
-    return url_for("webui.responder")
+#     return url_for("webui.responder")
 
 
 def carta(responder):
@@ -261,7 +263,7 @@ def responder():
 # tarefa no Gmail do operador do sistema considerando o número de dias utéis
 # dado como prazo final para a operadora responder se penalidades
 def agendar():
-    SCOPES = ["https://www.googleapis.com/auth/calendar"]
+    SCOPES = ['https://www.googleapis.com/auth/calendar']
     """Shows basic usage of the Google Calendar API.
     Prints the start and name of the next 10 events on the user's calendar.
     """
@@ -269,135 +271,128 @@ def agendar():
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
-    if os.path.exists("token.json"):
-        creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+    if os.path.exists('token.json'):
+        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
+            flow = InstalledAppFlow.from_client_secrets_file(
+                'credentials.json', SCOPES)
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
-        with open("token.json", "w") as token:
+        with open('token.json', 'w') as token:
             token.write(creds.to_json())
 
     try:
-        service = build("calendar", "v3", credentials=creds)
+        service = build('calendar', 'v3', credentials=creds)
 
     except HttpError as error:
-        print("An error occurred: %s" % error)
+        print('An error occurred: %s' % error)
 
-        return render_template("tarefas.html")
+        return render_template('tarefas.html')
+    
+    
+    # Ler com pandas o arquivo excel mais recente cujo nome contem o o trech "demandas_aguardando_resposta" o no caminho "C:/Users/amantino/Downloads/"  e converta ele para dataframe
+    tarefas = pd.read_excel('planilha/tarefas.xlsx', header=0)
 
-    todas_demandas = pd.read_excel("planilha/todas_demandas.xlsx")
+    # Buscar o nome da operadora na celula A5 do arquivo excel e armazenar na variavel operadora
+    operadora = tarefas.iloc[9, 1]
+    
+        # incluir coluna agendada com valor 'NO' para todas as linhas
+    tarefas['agendada'] = 'NO'
+
+    todas_demandas = pd.read_excel('planilha/todas_demandas.xlsx')
     # criar coluna agendada na planilha excel todas_demandas
 
-    todas_demandas["agendada"] = "SIM"
+    todas_demandas['agendada'] = "SIM"
 
-    tarefas = pd.read_excel("planilha/tarefas.xlsx")
-
-    # incluir coluna agendada com valor 'NO' para todas as linhas
-    tarefas["agendada"] = "NO"
 
     # Concatenar todas_demandas e tarefas
     todas_demandas = pd.concat([todas_demandas, tarefas], ignore_index=True)
 
     # Eliminar as duplicadas
-    todas_demandas.drop_duplicates(subset="Demanda", keep="first", inplace=True)
+    todas_demandas.drop_duplicates(
+        subset="Demanda", keep="first", inplace=True)
     # Salvar planilha excel todas_demandas
-    todas_demandas.to_excel("planilha/todas_demandas.xlsx", index=False)
+    todas_demandas.to_excel('planilha/todas_demandas.xlsx', index=False)
 
-    # Abrir Excel para leitura
-    todas_demandas = pd.read_excel("planilha/todas_demandas.xlsx")
 
     event = " "
-
     for i in range(len(todas_demandas)):
-        demanda = todas_demandas["Demanda"][i]
+        demanda = todas_demandas['Demanda'][i]
         demanda = str(demanda)
-        protocolo = todas_demandas["Protocolo"][i]
-        beneficiario = todas_demandas["Beneficiário"][i]
-        operadora = todas_demandas["Operadora"][i]
-        natureza = todas_demandas["Natureza"][i]
-        notificacao = todas_demandas["Data da Notificação"][i]
-        notificacao = notificacao[0:10]
-        dia, mes, ano = notificacao.split("/")
-        # Variável criada para usar no agendamento das tarefas
-        dia1, mes1, ano1 = notificacao.split("/")
-        notificacao = f"{ano}-{mes}-{dia}"
-        notificacao = datetime.datetime.strptime(notificacao, "%Y-%m-%d")
-        hoje = todas_demandas["Hoje"][i]
-        # Separa dia mês e ano
-        dia, mes, ano = hoje.split("-")
-        hoje = f"{ano}-{mes}-{dia}"
-        # converter a data para o formato do google calendar
-        hoje = datetime.datetime.strptime(hoje, "%Y-%m-%d")
-
-        prazo = todas_demandas["Prazo"][i]
-        prazo = prazo.split(" ")
-        prazo = prazo[0]
+        protocolo = todas_demandas['Protocolo'][i]
+        beneficiario = todas_demandas['Beneficiário'][i]
+        natureza = todas_demandas['Natureza'][i]
+        notificacao = todas_demandas['Data da Notificação'][i]
+        prazo = todas_demandas['Prazo'][i]
         prazo = int(prazo)
         # somar prazo em uteis a data de hoje
         # d1 = date.today()
         prazo_final = wd.workdays(notificacao, 10)
         prazo_subsidio = wd.workdays(notificacao, 8)
         # Converter data em str 'YYYY-mm-dd'
-        prazo_final = prazo_final.strftime("%Y-%m-%d")
-        operadora1 = operadora.split(" ")
-        operadora1 = operadora1[2]
-        operadora1 = operadora1.upper()
+        prazo_final = prazo_final.strftime('%Y-%m-%d')
         beneficiario1 = beneficiario.upper()
-        summary = f"{natureza} - NIP {operadora1} - {beneficiario1} - DEMANDA Nº {demanda} [{dia1}/{mes1}]"
+        dia = 18
+        mes = 1
+        ano = 2023
+        summary = f'{natureza} - NIP {operadora} - {beneficiario} - DEMANDA Nº {demanda} [{dia}/{mes}]'
 
         if todas_demandas["agendada"][i] == "NO":
+
             event = {
-                "summary": summary,
-                "location": "Gomes e Campello",
-                "description": natureza,
-                "start": {
-                    "date": prazo_final,
-                    "timeZone": "America/Los_Angeles",
+                'summary': summary,
+                'location': 'Gomes e Campello',
+                'description': natureza,
+                'start': {
+                    'date': prazo_final,
+                    'timeZone': 'America/Los_Angeles',
                 },
-                "end": {
-                    "date": prazo_final,
-                    "timeZone": "America/Los_Angeles",
+                'end': {
+                    'date': prazo_final,
+                    'timeZone': 'America/Los_Angeles',
                 },
-                "attendees": [
+                'attendees': [
                     # {'email': 'Juliana.morais@campellogomes.com.br'},
                     # {'email': 'gabriela.faustino@campellogomes.com.br'},
                     # {'email': 'felipe.gomes@campellogomes.com.br'},
                     # {'email': 'marcio.campello@campellogomes.com.br'},
-                    {"email": "amantino@yahoo.com"},
+                    {'email': 'amantino@yahoo.com'},
+                    {'email': 'claudio.vieiraamantino@gmail.com'},
+                    
+
                 ],
-                "guestsCanSeeOtherGuests": True,
-                "transparency": "transparent",
-                "colorId": 9,
+                'guestsCanSeeOtherGuests': True,
+                'transparency': 'transparent',
+                'colorId': 9,
             }
 
-            event = service.events().insert(calendarId="primary", body=event).execute()
-            print("Event created: %s" % (event.get("htmlLink")))
+            event = service.events().insert(calendarId='primary', body=event).execute()
+            print('Event created: %s' % (event.get('htmlLink')))
 
             # Enviar e-mail
             with open("grifos/email-operadora.txt", "rb") as file:
                 body = file.read().decode("utf-8")
-                body = (
-                    f"Boa tarde. Gabriele.\n\n Segue nova demanda ASSISTENCIAL recepcionada no Espaço NIP da Operadora em [{dia1}/{mes1}] \n\n\n Reclamação: Interlocutora, que se identifica como irmã da beneficiária, questiona a não cobertura para tomografia em caráter de urgência. O procedimento foi solicitado no dia [{dia1}/{mes1}/{ano1}], para realização no município RECIFE, entretanto, a operadora negou com a justificativa de que a beneficiária está em carência para o procedimento [não soube especificar se no contrato há alguma cláusula de redução de carência]. Protocolo: não possui protocolo. (sic). \n\n\n Prazo de resolução e contato para fins de RVE (art. 10, I e II, da RN nº 483/22): {prazo_final} \n\n Prazo para envio dos subsídios: {prazo_subsidio} \n\n\n"
-                    + body
-                )
+                body = f"Boa tarde. Gabriele.\n\n Segue nova demanda ASSISTENCIAL recepcionada no Espaço NIP da Operadora em [{dia}/{mes}] \n\n\n Reclamação: Interlocutora, que se identifica como irmã da beneficiária, questiona a não cobertura para tomografia em caráter de urgência. O procedimento foi solicitado no dia [{dia}/{mes}/{ano}], para realização no município RECIFE, entretanto, a operadora negou com a justificativa de que a beneficiária está em carência para o procedimento [não soube especificar se no contrato há alguma cláusula de redução de carência]. Protocolo: não possui protocolo. (sic). \n\n\n Prazo de resolução e contato para fins de RVE (art. 10, I e II, da RN nº 483/22): {prazo_final} \n\n Prazo para envio dos subsídios: {prazo_subsidio} \n\n\n" + \
+                    body
             smtp_server = "smtp.gmail.com"
             port = 587
             sender_email = "claudio.vieiraamantino@gmail.com"
-            password = "pdrzpituclaxvnag"
-            recipient_emails = [attendee["email"] for attendee in event["attendees"]]
+            password = "qgexibuowwmpbbbq"
+            recipient_emails = [attendee['email']
+                                for attendee in event['attendees']]
             subject = summary
             message = f"Subject: {subject}\n\n{body}"
-            message = message.encode("utf-8")
+            message = message.encode('utf-8')
 
             with smtplib.SMTP(smtp_server, port) as server:
                 server.ehlo()
                 server.starttls()
                 server.login(sender_email, password)
-                server.sendmail(sender_email, recipient_emails, message)
+                server.sendmail(sender_email, recipient_emails,
+                                message)
 
-    return render_template("tarefas.html", event=event)
+    return render_template('tarefas.html', event=event)

@@ -3,6 +3,7 @@ from nameparser import HumanName
 import shutil
 from flask import url_for
 import os
+import datetime
 
 import pandas as pd
 
@@ -33,6 +34,15 @@ def find_gender(nome):
     # para a pasta \Documents\Minhas fontes de dados antes de realizar a mesclagem
 
 def texto(operadora, hoje, first_name, demanda, situacao):
+    print('=========================================', f'Operadora: {operadora}')
+    print('=========================================', f'Hoje: {hoje}') 
+    print('=========================================', f'Nome: {first_name}')   
+    print('=========================================', f'Demanda: {demanda}')   
+    print('=========================================', f'Situação: {situacao}')     
+     
+    hoje = datetime.datetime.now().strftime('%d/%m/%Y')
+    # Substituir "/" por "-" na variável hoje
+    hoje = hoje.replace("/", "-")    
 
     # Chama a funcão para capitular os nomes de pessoas de forma correta.
     # Esse nome será utilizado para criar a beneficiário mantendo o padrão de
@@ -44,7 +54,8 @@ def texto(operadora, hoje, first_name, demanda, situacao):
     origem_excel = (
         f'{prefixo_pastas_excel}/{hoje}/{operadora}/{name}/{demanda}/{name}.xlsx')
     destino_excel = (f'{prefixo_fonte}/fonte.xlsx')
-    
+    print('=========================================', f'Origem: {origem_excel}')
+    print('=========================================', f'Destino: {destino_excel}')
 
     try:
         shutil.copyfile(origem_excel, destino_excel)

@@ -63,17 +63,17 @@ Responder
 
       <thead>
         <tr>
-          <th>{{colunas[5]}}</th>
-          <th>{{colunas[1]}}</th>
-          <th>{{colunas[2]}}</th>
-          <th>{{colunas[3]}}</th>
-          <th>{{colunas[4]}}</th>
-          <th>{{colunas[0]}}</th>
-          <th>{{colunas[6]}}</th>
-          <th>{{colunas[7]}}</th>
-          <th>{{colunas[11]}}</th>
-          <th>{{colunas[12]}}</th>
-          <th>{{colunas[13]}}</th>
+          <th>{{colunas[0]}}</th> <!-- Operadora-->
+          <th>{{colunas[1]}}</th> <!-- Data Notificação-->
+          <th>{{colunas[2]}}</th> <!-- Demanda-->
+          <th>{{colunas[3]}}</th> <!-- Protocolo-->
+          <th>{{colunas[4]}}</th> <!-- Beneficiario-->
+          <th>{{colunas[5]}}</th> <!-- CPF-->
+          <th>{{colunas[6]}}</th> <!-- Descrição-->
+          <th>{{colunas[7]}}</th> <!-- Prazo-->
+          <th>{{colunas[10]}}</th> <!-- Contrato-->
+          <th>{{colunas[11]}}</th> <!-- Registro-->
+          <th>{{colunas[12]}}</th> <!-- Modalidade-->
         <tr>
       </thead>
       <tbody>
@@ -82,17 +82,17 @@ Responder
         {% for x in range(quantidade) %}
 
         <tr>
-          <td>{{tuples[5][x]}}</td>
+          <td>{{tuples[0][x]}}</td>
           <td>{{tuples[1][x]}}</td>
           <td>{{tuples[2][x]}}</td>
           <td>{{tuples[3][x]}}</td>
           <td>{{tuples[4][x]}}</td>
-          <td>{{tuples[0][x]}}</td>
+          <td>{{tuples[5][x]}}</td>
           <td>{{tuples[6][x]}}</td>
           <td>{{tuples[7][x]}}</td>
+          <td>{{tuples[10][x]}}</td>
           <td>{{tuples[11][x]}}</td>
           <td>{{tuples[12][x]}}</td>
-          <td>{{tuples[13][x]}}</td>
           <!-- Adicionar campo de entrada -->
         </tr>
         {% endfor %}
@@ -100,10 +100,11 @@ Responder
 
     </table>
 
-    <input type="text" name="hoje" id="hoje" value="" hidden>
-    <input type="text" name="operadora" id="operadora" value="" hidden>
-    <input type="text" name="beneficiario" id="beneficiario" value="" hidden>
     <input type="text" name="demanda" id="demanda" value="" hidden>
+    <input type="text" name="operadora" id="operadora" value="" hidden>
+    <input type="text" name="hoje" id="hoje" value="" hidden>
+    <input type="text" name="beneficiario" id="beneficiario" value="" hidden>
+
 
     <button class="button" id="visualizarDados">Abrir o Word.</button>
     <br>
@@ -164,24 +165,23 @@ Responder
         for (var i = 0; i < selecionados.length; i++) {
           var selecionado = selecionados[i];
           selecionado = selecionado.getElementsByTagName("td");
-          dados += "Operadora: " + selecionado[2].innerHTML + " - Hoje: " + selecionado[1].innerHTML + " - Beneficiário: " + selecionado[3].innerHTML + " - Demanda: " + selecionado[4].innerHTML + "\n";
-          beneficiario = selecionado[0].innerHTML;
-          hoje = selecionado[5].innerHTML;
+          dados += "Operadora: " + selecionado[1].innerHTML + " - Hoje: " + selecionado[0].innerHTML + " - Beneficiário: " + selecionado[2].innerHTML + " - Demanda: " + selecionado[2].innerHTML + "\n";
+          
+          beneficiario = selecionado[4].innerHTML;
+          hoje = selecionado[0].innerHTML;
           operadora = selecionado[1].innerHTML;
-          demanda = selecionado[3].innerHTML;
+          demanda = selecionado[2].innerHTML;
 
         }
-        document.getElementById("beneficiario").value = beneficiario;
+
         document.getElementById("hoje").value = hoje;
         document.getElementById("operadora").value = operadora;
+        document.getElementById("beneficiario").value = beneficiario;
         document.getElementById("demanda").value = demanda;
 
       });
 
     </script>
-
-
-
 
     <style>
       body {
