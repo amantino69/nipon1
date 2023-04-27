@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" integrity="sha512-WzB2sYhtXJWy7Vhuk6PM2wHwvGBZlRvlIjs18HYzDbgJOd8roNGYpJcKl3a3qBw8LkIRelZ4t4+MdwjTu1W8zQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Cadastro</title>
+  </head>
+
+  <body class="bg-light">
+    <div class="container my-5 p-5 bg-white rounded-3 shadow">
+      <h1 class="text-center mb-5">Cadastro Verdade</h1>
+      <form class="row g-3">
+        <div class="col-md-6">
+          <label for="nome" class="form-label">Nome</label>
+          <input type="text" class="form-control" id="nome" placeholder="Digite seu nome" />
+        </div>
+        <div class="col-md-6">
+          <label for="idade" class="form-label">Idade</label>
+          <input type="text" class="form-control" id="idade" placeholder="Digite sua idade" />
+        </div>
+        <div class="col-md-6">
+          <label for="telefone" class="form-label">Telefone</label>
+          <input type="text" class="form-control" id="telefone" placeholder="Digite seu telefone" />
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Sexo</label>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="sexo" id="masculino" value="masculino" />
+            <label class="form-check-label" for="masculino">
+              Masculino
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="sexo" id="feminino" value="feminino" />
+            <label class="form-check-label" for="feminino">
+              Feminino
+            </label>
+          </div>
+        </div>
+        <div class="col-12">
+          <button type="submit" class="btn btn-primary">
+            Cadastrar
+          </button>
+        </div>
+      </form>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.min.js" integrity="sha512-qH97grdpKvJyD0+Rf+cR8lH1d+f0jg3r3ZkdLc8J/TdA5v5Mw1Oz+0FGKKBhQYdYtLbGt0ZbcXOsjvI+0ArWJg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  </body>
+</html>

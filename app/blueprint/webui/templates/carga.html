@@ -75,6 +75,7 @@ Resumo
 </script>
 <form action="{{url_for('webui.carga')}}" method="POST">
   <div class="table-responsive">
+<<<<<<< HEAD
     <table id="table" class="minhaTabela" table-striped table-hover">
       <thead>
         <tr class="minhaTabela tr td">
@@ -83,18 +84,37 @@ Resumo
           <th class="minhaTabela thead th ">{{ column }}</th>
           {% else %}
           <th class="minhaTabela thead th " contenteditable="true">{{ column }}</th>
+=======
+    <table id="table" class="table table-striped table-hover">
+      <thead>
+        <tr>
+          {% for column in df.columns %}
+          {% if loop.index <= df.columns|length-3 %}
+          <th>{{ column }}</th>
+          {% else %}
+          <th contenteditable="true">{{ column }}</th>
+>>>>>>> origin/main
           {% endif %}
           {% endfor %}
         </tr>
       </thead>
       <tbody>
         {% for row in df.iterrows() %}
+<<<<<<< HEAD
         <tr class="minhaTabela tr td">
           {% for value in row[1].values %}
           {% if loop.index <= row[1].values|length-3 %}
           <td class=minhaTabela tr td>{{ value }}</td>
           {% else %}
           <td contenteditable="true" class = 'minhaTabela tr td'>{{ value }}</td>
+=======
+        <tr>
+          {% for value in row[1].values %}
+          {% if loop.index <= row[1].values|length-3 %}
+          <td>{{ value }}</td>
+          {% else %}
+          <td contenteditable="true">{{ value }}</td>
+>>>>>>> origin/main
           {% endif %}
           {% endfor %}
         </tr>
@@ -118,7 +138,10 @@ Resumo
     font-weight: bold;
     background-color: black;
     color: white;
+<<<<<<< HEAD
     padding: 5px 10px;
+=======
+>>>>>>> origin/main
 
     padding: 5px 10px;
   }

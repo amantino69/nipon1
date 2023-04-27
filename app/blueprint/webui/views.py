@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/main
 from workadays import workdays as wd
 from apiclient.discovery import build
 from googleapiclient.errors import HttpError
@@ -21,6 +25,7 @@ import shutil
 from flask import url_for
 import os
 import glob
+<<<<<<< HEAD
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
@@ -28,10 +33,13 @@ from email.mime.text import MIMEText
 from email import encoders
 from dotenv import load_dotenv
 
+=======
+>>>>>>> origin/main
 
 # Página inicial do sistema que solicita ao usuários escolher qual operadora
 # e qual para quantidades de dias quer tratar as NIPs
 
+<<<<<<< HEAD
 
 # se existir a pasta C:\Users\amantino existe então shutil.copy(".cla", ".env") senão shutil.copy(".ju", ".env")
 if os.path.exists("C:/Users/amantino/Documents"):
@@ -55,6 +63,17 @@ def index():
     if request.method == "POST":
         operadora = request.form.get("operadora")
         operadora_global = operadora
+=======
+# Eu
+prefixo_pastas_word = "C:/Users/amantino/documents"
+prefixo_pastas_excel = "C:/Users/amantino/documents/fontes"
+prefixo_fonte = "C:/Users/amantino/documents/Minhas fontes de dados"
+
+
+def index():
+    if request.method == "POST":
+        operadora = request.form.get("operadora")
+>>>>>>> origin/main
         dias = request.form.get("dias")
         saida = MalaDireta.job(operadora, dias)
         tabela = pd.read_excel("planilha/responder.xlsx")
@@ -70,13 +89,18 @@ def index():
 
 def direcionador():
     if request.method == "POST":
+<<<<<<< HEAD
         lista_arquivos = glob.glob(f"{prefixo_pasta_downloads}/*direcionamento*.xlsx")
         print("============  lista de arquivos ===========", lista_arquivos)
+=======
+        lista_arquivos = glob.glob("C:/Users/amantino/Downloads/*direcionamento*.xlsx")
+>>>>>>> origin/main
         arquivo_recente = max(lista_arquivos, key=os.path.getctime)
         # Capturar a data de alteração do arquivo mais recente
         data = datetime.datetime.fromtimestamp(os.path.getmtime(arquivo_recente))
         mensagem = f"O arquivo mais recente encontrado foi: {arquivo_recente}"
         tabela = pd.read_excel(arquivo_recente)
+<<<<<<< HEAD
         direcionador_HAP = tabela.to_html(
             classes=["table", "table-striped", "table-bordered", "table-hover"],
             index=False,
@@ -90,6 +114,16 @@ def direcionador():
             data=data,
         )
 
+=======
+        direcionador_HAP = tabela.to_html(classes=["table", "table-striped", "table-bordered", "table-hover"], index=False
+    )
+
+              
+        return render_template("direcionador.html", arquivo_recente=arquivo_recente, mensagem=mensagem, direcionador_HAP=direcionador_HAP, data=data)
+    
+    
+ 
+>>>>>>> origin/main
     return render_template("direcionador.html")
 
 
@@ -120,6 +154,42 @@ def saida():
     return render_template("saida.html", tabela_html=tabela_html)
 
 
+<<<<<<< HEAD
+=======
+# *************************************************************************
+# def texto(operadora, hoje, first_name, demanda, situacao):
+#     # Chama a funcão para capitular os nomes de pessoas de forma correta.
+#     # Esse nome será utilizado para criar a beneficiário mantendo o padrão de
+#     # da empresa que não utiliza caixa alta nos nomes das pastas
+
+#     name = HumanName(first_name)
+#     name.capitalize(force=True)
+#     hoje = datetime.datetime.now().strftime('%d/%m/%Y')
+
+#     origem_excel = (
+#         f"{prefixo_pastas_excel}/{hoje}/{operadora}/{name}/{demanda}/{name}.xlsx"
+#     )
+#     destino_excel = f"{prefixo_fonte}/fonte.xlsx"
+
+#     try:
+#         shutil.copyfile(origem_excel, destino_excel)
+#         os.startfile(
+#             f"{prefixo_pastas_word}/{hoje}/{operadora}/{name}/{demanda}/{name}.docx"
+#         )
+#         print("Arquivo copiado com sucesso")
+
+#         # Imprimir f"{prefixo_pastas_word}/{hoje}/{operadora}/{name}/{demanda}/{name}.docx")
+
+#     except Exception as e:
+#         print(
+#             "=========================================",
+#             f"Erro ao copiar o arquivo: {e}",
+#         )
+
+#     return url_for("webui.responder")
+
+
+>>>>>>> origin/main
 def carta(responder):
     try:
         file_name = "planilha/responder.xlsx"  # File name
@@ -157,12 +227,21 @@ def tarefas():
         qdade = request.form.get("qdade")
 
         if argumento == "":
+<<<<<<< HEAD
             argumento = "XyWz"
         if qdade == "":
             qdade = 1
     else:
         argumento = "XyWz"
         qdade = 1
+=======
+            argumento = "NIPON"
+        if qdade == "":
+            qdade = 10
+    else:
+        argumento = "NIP"
+        qdade = 10
+>>>>>>> origin/main
 
     SCOPES = ["https://www.googleapis.com/auth/calendar"]
     """Shows basic usage of the Google Calendar API.
@@ -256,7 +335,11 @@ def responder():
 # tarefa no Gmail do operador do sistema considerando o número de dias utéis
 # dado como prazo final para a operadora responder se penalidades
 def agendar():
+<<<<<<< HEAD
     SCOPES = ["https://www.googleapis.com/auth/calendar"]
+=======
+    SCOPES = ['https://www.googleapis.com/auth/calendar']
+>>>>>>> origin/main
     """Shows basic usage of the Google Calendar API.
     Prints the start and name of the next 10 events on the user's calendar.
     """
@@ -264,13 +347,19 @@ def agendar():
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
+<<<<<<< HEAD
     if os.path.exists("token.json"):
         creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+=======
+    if os.path.exists('token.json'):
+        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+>>>>>>> origin/main
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
+<<<<<<< HEAD
             flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
@@ -305,11 +394,44 @@ def agendar():
     # criar coluna agendada na planilha excel todas_demandas
 
     todas_demandas["agendada"] = "SIM"
+=======
+            flow = InstalledAppFlow.from_client_secrets_file(
+                'credentials.json', SCOPES)
+            creds = flow.run_local_server(port=0)
+        # Save the credentials for the next run
+        with open('token.json', 'w') as token:
+            token.write(creds.to_json())
+
+    try:
+        service = build('calendar', 'v3', credentials=creds)
+
+    except HttpError as error:
+        print('An error occurred: %s' % error)
+
+        return render_template('tarefas.html')
+    
+    
+    # Ler com pandas o arquivo excel mais recente cujo nome contem o o trech "demandas_aguardando_resposta" o no caminho "C:/Users/amantino/Downloads/"  e converta ele para dataframe
+    tarefas = pd.read_excel('planilha/tarefas.xlsx', header=0)
+
+    # Buscar o nome da operadora na celula A5 do arquivo excel e armazenar na variavel operadora
+    operadora = tarefas.iloc[9, 1]
+    
+        # incluir coluna agendada com valor 'NO' para todas as linhas
+    tarefas['agendada'] = 'NO'
+
+    todas_demandas = pd.read_excel('planilha/todas_demandas.xlsx')
+    # criar coluna agendada na planilha excel todas_demandas
+
+    todas_demandas['agendada'] = "SIM"
+
+>>>>>>> origin/main
 
     # Concatenar todas_demandas e tarefas
     todas_demandas = pd.concat([todas_demandas, tarefas], ignore_index=True)
 
     # Eliminar as duplicadas
+<<<<<<< HEAD
     todas_demandas.drop_duplicates(subset="Demanda", keep="first", inplace=True)
     # Salvar planilha excel todas_demandas
     todas_demandas.to_excel("planilha/todas_demandas.xlsx", index=False)
@@ -326,12 +448,30 @@ def agendar():
         descricao = todas_demandas["Descrição"][i]
         print("=====  N o t i f i c a ç ã o", notificacao)
         prazo = todas_demandas["Prazo"][i]
+=======
+    todas_demandas.drop_duplicates(
+        subset="Demanda", keep="first", inplace=True)
+    # Salvar planilha excel todas_demandas
+    todas_demandas.to_excel('planilha/todas_demandas.xlsx', index=False)
+
+
+    event = " "
+    for i in range(len(todas_demandas)):
+        demanda = todas_demandas['Demanda'][i]
+        demanda = str(demanda)
+        protocolo = todas_demandas['Protocolo'][i]
+        beneficiario = todas_demandas['Beneficiário'][i]
+        natureza = todas_demandas['Natureza'][i]
+        notificacao = todas_demandas['Data da Notificação'][i]
+        prazo = todas_demandas['Prazo'][i]
+>>>>>>> origin/main
         prazo = int(prazo)
         # somar prazo em uteis a data de hoje
         # d1 = date.today()
         prazo_final = wd.workdays(notificacao, 10)
         prazo_subsidio = wd.workdays(notificacao, 8)
         # Converter data em str 'YYYY-mm-dd'
+<<<<<<< HEAD
         prazo_final = prazo_final.strftime("%Y-%m-%d")
         beneficiario1 = beneficiario.upper()
         prazo_subsidios = wd.workdays(notificacao, 8)
@@ -386,10 +526,51 @@ def agendar():
             # Formularios Parametrizados de Resposta das Operadoras.pdf
             # Quadro de documentos mínimos - NIP Assistencial.pdf
             # Quadro de documentos mínimos - NIP Não Assistencial.pdf
+=======
+        prazo_final = prazo_final.strftime('%Y-%m-%d')
+        beneficiario1 = beneficiario.upper()
+        dia = 18
+        mes = 1
+        ano = 2023
+        summary = f'{natureza} - NIP {operadora} - {beneficiario} - DEMANDA Nº {demanda} [{dia}/{mes}]'
+
+        if todas_demandas["agendada"][i] == "NO":
+
+            event = {
+                'summary': summary,
+                'location': 'Gomes e Campello',
+                'description': natureza,
+                'start': {
+                    'date': prazo_final,
+                    'timeZone': 'America/Los_Angeles',
+                },
+                'end': {
+                    'date': prazo_final,
+                    'timeZone': 'America/Los_Angeles',
+                },
+                'attendees': [
+                    # {'email': 'Juliana.morais@campellogomes.com.br'},
+                    # {'email': 'gabriela.faustino@campellogomes.com.br'},
+                    # {'email': 'felipe.gomes@campellogomes.com.br'},
+                    # {'email': 'marcio.campello@campellogomes.com.br'},
+                    {'email': 'amantino@yahoo.com'},
+                    {'email': 'claudio.vieiraamantino@gmail.com'},
+                    
+
+                ],
+                'guestsCanSeeOtherGuests': True,
+                'transparency': 'transparent',
+                'colorId': 9,
+            }
+
+            event = service.events().insert(calendarId='primary', body=event).execute()
+            print('Event created: %s' % (event.get('htmlLink')))
+>>>>>>> origin/main
 
             # Enviar e-mail
             with open("grifos/email-operadora.txt", "rb") as file:
                 body = file.read().decode("utf-8")
+<<<<<<< HEAD
                 body = (
                     f"Prezados, \n\n Segue nova demanda {natureza} recepcionada no Espaço NIP em {dia}, instaurada por {beneficiario} ({CPF}) com o seguinte teor: \n\n Reclamação: {descricao} \n\n\n Prazo de resolução e contato para fins de RVE (art. 10, I e II, da RN nº 483/22): {prazo_de_RVE} \n\n Prazo para envio dos subsídios: {prazo_subsidios} \n\n\n"
                     + body
@@ -428,11 +609,32 @@ def agendar():
                 msg.attach(part)
 
             # Enviando o email
+=======
+                body = f"Boa tarde. Gabriele.\n\n Segue nova demanda ASSISTENCIAL recepcionada no Espaço NIP da Operadora em [{dia}/{mes}] \n\n\n Reclamação: Interlocutora, que se identifica como irmã da beneficiária, questiona a não cobertura para tomografia em caráter de urgência. O procedimento foi solicitado no dia [{dia}/{mes}/{ano}], para realização no município RECIFE, entretanto, a operadora negou com a justificativa de que a beneficiária está em carência para o procedimento [não soube especificar se no contrato há alguma cláusula de redução de carência]. Protocolo: não possui protocolo. (sic). \n\n\n Prazo de resolução e contato para fins de RVE (art. 10, I e II, da RN nº 483/22): {prazo_final} \n\n Prazo para envio dos subsídios: {prazo_subsidio} \n\n\n" + \
+                    body
+            smtp_server = "smtp.gmail.com"
+            port = 587
+            sender_email = "claudio.vieiraamantino@gmail.com"
+            password = "qgexibuowwmpbbbq"
+            recipient_emails = [attendee['email']
+                                for attendee in event['attendees']]
+            subject = summary
+            message = f"Subject: {subject}\n\n{body}"
+            message = message.encode('utf-8')
+
+>>>>>>> origin/main
             with smtplib.SMTP(smtp_server, port) as server:
                 server.ehlo()
                 server.starttls()
                 server.login(sender_email, password)
+<<<<<<< HEAD
                 text = msg.as_string()
                 server.sendmail(sender_email, recipient_emails, text)
 
     return render_template("tarefas.html", event=event)
+=======
+                server.sendmail(sender_email, recipient_emails,
+                                message)
+
+    return render_template('tarefas.html', event=event)
+>>>>>>> origin/main

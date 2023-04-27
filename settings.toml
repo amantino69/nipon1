@@ -1,5 +1,9 @@
 [default]
+<<<<<<< HEAD
 DEBUG = true
+=======
+DEBUG = false
+>>>>>>> origin/main
 FLASK_ADMIN_NAME = "FAST NIP"
 FLASK_ADMIN_TEMPLATE_MODE = "bootstrap3"
 FLASK_ADMIN_SWATCH = 'cerulean'
@@ -23,7 +27,11 @@ EXTENSIONS = [
 TEMPLATES_AUTO_RELOAD = true
 DEBUG = true
 DEBUG_TOOLBAR_ENABLED = true
+<<<<<<< HEAD
 DEBUG_TB_INTERCEPT_REDIRECTS = true
+=======
+DEBUG_TB_INTERCEPT_REDIRECTS = false
+>>>>>>> origin/main
 DEBUG_TB_PROFILER_ENABLED = true
 DEBUG_TB_TEMPLATE_EDITOR_ENABLED = true
 DEBUG_TB_PANELS = [

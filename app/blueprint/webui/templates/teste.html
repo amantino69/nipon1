@@ -1,0 +1,135 @@
+Codex JavaScript Sandbox
+
+Provide instructions...
+3
+Clear all
+Export to JSFiddle
+/* crie um formulário estilizado com recursos do bootstrap com fundo azul e recursos css */
+var form = document.createElement('form');
+form.className = 'form-horizontal';
+form.style.backgroundColor = '#337ab7';
+form.style.color = 'white';
+form.style.padding = '20px';
+form.style.margin = '20px';
+form.style.borderRadius = '10px';
+document.body.appendChild(form);
+/* Insira campos na vertical para receber Nome, Idade e telefone com espaçamento de 10px entre eles */
+var nome = document.createElement('input');
+nome.type = 'text';
+nome.placeholder = 'Nome';
+nome.style.margin = '10px';
+form.appendChild(nome);
+var idade = document.createElement('input');
+idade.type = 'text';
+idade.placeholder = 'Idade';
+idade.style.margin = '10px';
+form.appendChild(idade);
+var telefone = document.createElement('input');
+telefone.type = 'text';
+telefone.placeholder = 'Telefone';
+telefone.style.margin = '10px';
+form.appendChild(telefone);
+/* o formulário deve ter 400px de largura */
+form.style.width = '300px';
+/* insira o campo sexo com dosi botões clicáves com as opções masculino e feminino */
+var sexo = document.createElement('div');
+sexo.style.margin = '10px';
+form.appendChild(sexo);
+var masculino = document.createElement('input');
+masculino.type = 'radio';
+masculino.name = 'sexo';
+masculino.value = 'masculino';
+masculino.style.margin = '10px';
+sexo.appendChild(masculino);
+var masculinoLabel = document.createElement('label');
+masculinoLabel.innerHTML = 'Masculino';
+masculinoLabel.style.margin = '10px';
+sexo.appendChild(masculinoLabel);
+var feminino = document.createElement('input');
+feminino.type = 'radio';
+feminino.name = 'sexo';
+feminino.value = 'feminino';
+feminino.style.margin = '10px';
+sexo.appendChild(feminino);
+var femininoLabel = document.createElement('label');
+femininoLabel.innerHTML = 'Feminino';
+femininoLabel.style.margin = '10px';
+sexo.appendChild(femininoLabel);
+/* trasnforme a opção sexo em botões clicáveis */
+masculino.type = 'button';
+feminino.type = 'button';
+/* alinhe masculino e feminino à esquera */
+masculino.style.float = 'left';
+feminino.style.float = 'left';
+/* elimine o label dos botões */
+masculinoLabel.style.display = 'none';
+femininoLabel.style.display = 'none';
+/* altere o tamanho do formulário para 300px de lagura por 600px de altura */
+form.style.width = '300px';
+form.style.height = '600px';
+/* ao passar o mouse sobre o botão masculino, apenas ele deve mudar de posição aleatoriamente entre 300px na vertical e 300px horizontal */
+masculino.onmouseover = function() {
+  masculino.style.position = 'absolute';
+  masculino.style.top = Math.floor(Math.random() * 300) + 'px';
+  masculino.style.left = Math.floor(Math.random() * 300) + 'px';
+}
+/* Crie na posição 500px na vertical um botão que retorna o botão masculino para a posição original */
+var retornar = document.createElement('button');
+retornar.innerHTML = 'Retornar';
+retornar.style.position = 'absolute';
+retornar.style.top = '500px';
+retornar.style.left = '0px';
+document.body.appendChild(retornar);
+retornar.onclick = function() {
+  masculino.style.position = 'static';
+}
+/* alinhe o botão retomar com os demais */
+retornar.style.margin = '10px';
+/* desloque o botão retomar em 50px à direita */
+retornar.style.left = '50px';
+/* insrira no topo e  dentro do espaço do formulário 300px largura por 600px altura o título Cadastro de Pessoa */
+var titulo = document.createElement('h1');
+titulo.innerHTML = 'Cadastro Verdade';
+titulo.style.textAlign = 'center';
+titulo.style.margin = '0px';
+titulo.style.padding = '0px';
+form.insertBefore(titulo, nome);
+/* O botão masculino apenas deve movimentar se um dos campos nome, idade ou telefone estiver preenchido */
+masculino.onmouseover = function() {
+  if (nome.value || idade.value || telefone.value) {
+    masculino.style.position = 'absolute';
+    masculino.style.top = Math.floor(Math.random() * 300) + 'px';
+    masculino.style.left = Math.floor(Math.random() * 300) + 'px';
+  }
+}
+/* acrescente à função do botão retomar que ele deve limpar todos os campos do formulário */
+retornar.onclick = function() {
+  masculino.style.position = 'static';
+  nome.value = '';
+  idade.value = '';
+  telefone.value = '';
+}
+/* Quando clicar em feminino exibir mensagem na posição 400px na vertical e 100px na horizontal "OK Agora sim. Informações corretas! Assuma!! */
+feminino.onclick = function() {
+  var mensagem = document.createElement('div');
+  mensagem.innerHTML = 'OK Agora sim. Informações corretas! Assuma!!';
+  mensagem.style.position = 'absolute';
+  mensagem.style.top = '400px';
+  mensagem.style.left = '50px';
+  document.body.appendChild(mensagem);
+}
+/* insira o campo CEP */
+var cep = document.createElement('input');
+cep.type = 'text';
+cep.placeholder = 'CEP';
+cep.style.margin = '10px';
+form.appendChild(cep);
+/* Insrirar os parâmetros para que as palavras em português acentuadas aparecaç corretamente */
+var meta = document.createElement('meta');
+meta.charset = 'utf-8';
+document.head.appendChild(meta);
+/* Ajustar para idioma português quando for executado no IIS */
+var meta2 = document.createElement('meta');
+meta2.httpEquiv = 'Content-Language';
+meta2.content = 'pt-br';
+document.head.appendChild(meta2);
